@@ -1,64 +1,125 @@
+import { useDroppable } from '@dnd-kit/core';
 import UserStoryCard from "./UserStoryCard";
 
-const sprintStories = [
-  {
-    id: "US-001",
-    title: "Implement OAuth2 authentication for enterprise SSO",
-    priority: "High",
-    points: 8,
-    avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCg4tkt2s-VmYZ9fVneMpeC2o4IT4GnXRLM2AQYjzhF5F7eoTZAzyN2hFsJQ7qsOx5tY-roETqboMjAjcI3eqvxObm_7LDglOwleWPWRIokfNcYiA2sVUf_RIFSWoLD1CaRVkVQ3XuEgoGg_tbNxlPI3G7ky4c3JQwlGKhmlWOvedM9VcV46Dpj3Plm7cC6M0b5lfadbwadeKhQ_84pk9RMvfJW3ZAuCLMBvjUzXm8fTmw1ld9T0-mPgXePYyqCnGPr9Bg_KulSiPw",
-  },
-  {
-    id: "US-002",
-    title: "Refactor global state management using Atomic patterns",
-    priority: "Medium",
-    points: 5,
-    avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZu4fqWtBXmy-LPCdia4yU4yYOlway0a7k8HB1UtmZlSodpU1y9L2Nwg3KlheOzAkrrF3yPSbZVeZZITBBP2gaUWpNWlB05zZatOhPimpK9J3u0zoFSLWSr-K2F7ik2NOpB1Ak2MbCXoBhTR0GatxnFndj_RS1IAahI-HrOfZhmM4s_wtrJ7u380-7HZf3UW9j2jxhIxtSL-LnMi4SEseYoMkbqjMWsCFg8IudhYywlUXphkwjDzNjFzjuXLz815W0-hhV6ww3nzI",
-  },
-  {
-    id: "US-003",
-    title: "Optimize SVG assets and implement lazy loading",
-    priority: "Low",
-    points: 3,
-    avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuBexoUHKvy92E4Pgb66kZ18CFR9TkW9Oq1CF-4QeK3fi31fMPOp3sjGKyb_x1Hoqi56IW8TYWx735jGuIXSWXxZ4yE51x1Npp7U6khaYUf0nW8MMK3LsClH6hRLN1eyo1q-jbOUaD7PTOQMF65gEcCyYk09v23Q_bppbHAO5F_FLnCm-QToPlTELl5DsZ0LwDX-I5UCPKHytKK4m57-bw58HW7sNayAjEB0Up80FUoCIRG2WC5VLzGXrwliK6gBLBSCVphJcgTddh8",
-  },
-];
+export default function SprintSection({ sprint, stories = [], onMoveToBacklog, onAssign, onEdit, onDelete, onStatusChange, userRole }) {
+  const isManagement = userRole === "PO" || userRole === "SM";
+  const { setNodeRef, isOver } = useDroppable({
+    id: `sprint-${sprint.id}`,
+  });
 
-export default function SprintSection({ progress = 66 }) {
+  const progress = stories.length > 0 
+    ? Math.round((stories.filter(s => s.status === 'DONE').length / stories.length) * 100) 
+    : 0;
+
+  const handleStartSprint = () => {
+    if (window.confirm(`Bạn có chắc muốn bắt đầu ${sprint.name}?`)) {
+      onStatusChange(sprint.id, 'ACTIVE');
+    }
+  };
+
+  const handleCompleteSprint = () => {
+    if (window.confirm(`Bạn có chắc muốn kết thúc ${sprint.name}?`)) {
+      onStatusChange(sprint.id, 'COMPLETED');
+    }
+  };
+
   return (
-    <section className="mb-12">
+    <section className="mb-8 last:mb-0 transition-all duration-300">
       {/* Section header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h3 className="font-['Manrope'] font-bold text-xl text-on-surface">Sprint 1 (Active)</h3>
-          <span className="bg-primary-container text-on-primary-container text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-widest">
-            Active
+          <h3 className="font-['Manrope'] font-bold text-lg text-on-surface">{sprint.name}</h3>
+          <span className={`text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-widest ${
+            sprint.status === 'ACTIVE' 
+              ? 'bg-primary-container text-on-primary-container shadow-sm shadow-primary/20' 
+              : sprint.status === 'COMPLETED'
+              ? 'bg-surface-variant text-on-surface-variant opacity-60'
+              : 'bg-surface-container-highest text-on-surface-variant'
+          }`}>
+            {sprint.status}
           </span>
+          {sprint.startDate && (
+            <span className="text-xs text-on-surface-variant opacity-60">
+              {new Date(sprint.startDate).toLocaleDateString()} - {new Date(sprint.endDate).toLocaleDateString()}
+            </span>
+          )}
         </div>
+        {sprint.goal && (
+          <p className="text-xs text-on-surface-variant italic mb-2 px-2 mt-1 border-l-2 border-primary/20">
+            Mục tiêu: {sprint.goal}
+          </p>
+        )}
         <div className="flex items-center gap-6">
           <div className="flex flex-col items-end">
             <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">
               Progress
             </span>
-            <div className="w-48 h-1.5 bg-surface-container-highest rounded-full mt-1 overflow-hidden">
+            <div className="w-32 h-1.5 bg-surface-container-highest rounded-full mt-1 overflow-hidden shadow-inner">
               <div
-                className="h-full bg-gradient-to-r from-primary to-primary-container rounded-full"
+                className={`h-full rounded-full transition-all duration-700 ${
+                  sprint.status === 'COMPLETED' ? 'bg-outline' : 'bg-gradient-to-r from-primary to-primary-container'
+                }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
-          <button className="text-primary text-sm font-bold flex items-center gap-1 hover:opacity-80 transition-opacity">
-            Complete Sprint
-          </button>
+          {isManagement && (
+            <>
+              {sprint.status === 'PLANNED' && (
+                <button 
+                  onClick={handleStartSprint}
+                  className="px-4 py-1.5 bg-primary text-on-primary text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-all shadow-md shadow-primary/20 flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">play_arrow</span>
+                  Start Sprint
+                </button>
+              )}
+              {sprint.status === 'ACTIVE' && (
+                <button 
+                  onClick={handleCompleteSprint}
+                  className="text-primary text-xs font-black uppercase tracking-widest flex items-center gap-1 hover:opacity-80 transition-opacity border border-primary/20 px-3 py-1.5 rounded-full"
+                >
+                  <span className="material-symbols-outlined text-sm">done_all</span>
+                  Complete Sprint
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
 
-      {/* Story cards */}
-      <div className="space-y-3 bg-surface-container-low p-6 rounded-2xl">
-        {sprintStories.map((story) => (
-          <UserStoryCard key={story.id} {...story} variant="sprint" />
-        ))}
+      {/* Story cards with Droppable Area */}
+      <div 
+        ref={setNodeRef}
+        className={`space-y-3 p-4 rounded-3xl min-h-[100px] border-2 transition-all duration-300 ${
+          isOver 
+            ? 'bg-primary/5 border-primary border-dashed shadow-inner scale-[1.01]' 
+            : 'bg-surface-container-low border-outline-variant/10'
+        }`}
+      >
+        {stories.length > 0 ? (
+          stories.map((story) => (
+            <UserStoryCard 
+              key={story.id} 
+              {...story} 
+              variant="sprint" 
+              onMove={onMoveToBacklog}
+              onAssign={onAssign}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              userRole={userRole}
+              moveIcon="arrow_downward"
+              moveTitle="Đẩy về Backlog"
+            />
+          ))
+        ) : (
+          <div className="py-6 flex flex-col items-center justify-center text-on-surface-variant/40 border-2 border-dashed border-outline-variant/10 rounded-2xl italic text-xs">
+             <span className="material-symbols-outlined text-3xl mb-1 opacity-20">inventory_2</span>
+             {isOver ? "Thả tại đây để thêm vào Sprint" : "Chưa có Story nào trong Sprint này."}
+          </div>
+        )}
       </div>
     </section>
   );
 }
+
