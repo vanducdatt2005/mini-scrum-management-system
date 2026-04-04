@@ -37,6 +37,7 @@ export default function Backlog() {
   const [editingStory, setEditingStory] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedStories, setSelectedStories] = useState([]);
 
   const navigate = useNavigate();
 
@@ -289,6 +290,62 @@ export default function Backlog() {
     }
   };
 
+  const toggleStorySelection = (storyId) => {
+    setSelectedStories(prev => 
+      prev.includes(storyId) ? prev.filter(id => id !== storyId) : [...prev, storyId]
+    );
+  };
+
+  const handleSelectAll = (isChecked, storyList) => {
+    if (isChecked) {
+      const newIds = storyList.map(s => s.id).filter(id => !selectedStories.includes(id));
+      setSelectedStories(prev => [...prev, ...newIds]);
+    } else {
+      const idsToRemove = storyList.map(s => s.id);
+      setSelectedStories(prev => prev.filter(id => !idsToRemove.includes(id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa ${selectedStories.length} User Story này?`)) return;
+    try {
+      setIsSubmitting(true);
+      await Promise.all(selectedStories.map(id => api.delete(`/userstory/${id}`)));
+      setSelectedStories([]);
+      await loadData();
+    } catch (e) {
+      window.alert("Lỗi khi xóa một số User Story!");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBulkMoveToSprint = async (sprintId) => {
+    try {
+      setIsSubmitting(true);
+      await Promise.all(selectedStories.map(id => updateUserStory(id, { sprintId, status: "TODO" })));
+      setSelectedStories([]);
+      await loadData();
+    } catch (err) {
+      window.alert("Có lỗi khi đưa các User Story vào Sprint");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBulkMoveToBacklog = async () => {
+    try {
+      setIsSubmitting(true);
+      await Promise.all(selectedStories.map(id => updateUserStory(id, { sprintId: null, status: "BACKLOG" })));
+      setSelectedStories([]);
+      await loadData();
+    } catch (err) {
+      window.alert("Có lỗi khi rút các User Story về Backlog");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
@@ -332,6 +389,18 @@ export default function Backlog() {
                   onDelete={handleDeleteStory}
                   onStatusChange={handleSprintStatusChange}
                   userRole={userRole}
+                  selectedStories={selectedStories}
+                  onToggleSelect={toggleStorySelection}
+                  onSelectAll={handleSelectAll}
+                  onMoveToBacklog={async (id) => {
+                    try {
+                      await updateUserStory(id, { sprintId: null, status: "BACKLOG" });
+                      await loadData();
+                    } catch (err) {
+                      console.error(err);
+                      alert("Không thể rút về Backlog");
+                    }
+                  }}
                 />
               ))
             ) : (
@@ -358,6 +427,9 @@ export default function Backlog() {
             onEdit={handleEditStory}
             onDelete={handleDeleteStory}
             userRole={userRole} 
+            selectedStories={selectedStories}
+            onToggleSelect={toggleStorySelection}
+            onSelectAll={handleSelectAll}
             onMoveToSprint={async (id) => {
               const latestSprint = sprints.find(s => s.status === 'PLANNED') || sprints[0];
               if (!latestSprint) {
@@ -404,6 +476,18 @@ export default function Backlog() {
                   onDelete={handleDeleteStory}
                   onStatusChange={handleSprintStatusChange}
                   userRole={userRole}
+                  selectedStories={selectedStories}
+                  onToggleSelect={toggleStorySelection}
+                  onSelectAll={handleSelectAll}
+                  onMoveToBacklog={async (id) => {
+                    try {
+                      await updateUserStory(id, { sprintId: null, status: "BACKLOG" });
+                      await loadData();
+                    } catch (err) {
+                      console.error(err);
+                      alert("Không thể rút về Backlog");
+                    }
+                  }}
                 />
               ))
             ) : (
@@ -415,6 +499,46 @@ export default function Backlog() {
           </div>
         </div>
       </DndContext>
+
+      {/* Floating Action Bar for Bulk Selection */}
+      {selectedStories.length > 0 && userRole !== "MEMBER" && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-surface-container-highest shadow-xl border border-outline-variant/20 rounded-2xl px-6 py-4 flex items-center justify-between gap-6 z-50 animate-in slide-in-from-bottom-5">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-primary text-2xl">check_circle</span>
+            <div>
+              <p className="font-bold text-on-surface text-base m-0 leading-tight">Đã chọn {selectedStories.length}</p>
+              <button 
+                onClick={() => setSelectedStories([])}
+                className="text-xs text-primary hover:underline m-0 p-0"
+              >Bỏ chọn tất cả</button>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <select 
+              className="bg-surface px-3 py-2 rounded-lg border border-outline-variant text-sm font-medium w-40"
+              onChange={(e) => {
+                const val = e.target.value;
+                if (!val) return;
+                if (val === 'backlog') handleBulkMoveToBacklog();
+                else handleBulkMoveToSprint(val);
+                e.target.value = '';
+              }}
+            >
+              <option value="">Di chuyển tới...</option>
+              <option value="backlog">🏠 Product Backlog</option>
+              {sprints.map(s => (
+                <option key={s.id} value={s.id}>🚀 {s.name}</option>
+              ))}
+            </select>
+            <button 
+              onClick={handleBulkDelete}
+              className="px-4 py-2 bg-error-container text-on-error-container rounded-lg border border-error/20 flex items-center gap-2 hover:bg-error hover:text-on-error transition-colors text-sm font-bold"
+            >
+              <span className="material-symbols-outlined text-sm">delete</span> Xóa
+            </button>
+          </div>
+        </div>
+      )}
 
       <CreateSprintModal 
         isOpen={isSprintModalOpen}
