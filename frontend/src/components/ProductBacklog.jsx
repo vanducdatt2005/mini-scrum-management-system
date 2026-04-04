@@ -17,7 +17,10 @@ export default function ProductBacklog({
   onEdit,
   onDelete,
   onMoveToSprint,
-  userRole
+  userRole,
+  selectedStories = [],
+  onToggleSelect,
+  onSelectAll
 }) {
   const isManagement = userRole === "PO" || userRole === "SM";
 
@@ -41,6 +44,15 @@ export default function ProductBacklog({
       {/* Header với Filter động */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div className="flex items-center gap-3">
+          {onSelectAll && (
+            <input 
+              type="checkbox"
+              className="w-5 h-5 cursor-pointer accent-primary shrink-0"
+              checked={stories.length > 0 && selectedStories.length === stories.length}
+              onChange={(e) => onSelectAll(e.target.checked, stories)}
+              title="Chọn tất cả trong Backlog"
+            />
+          )}
           <h3 className="font-['Manrope'] font-bold text-xl text-on-surface">Product Backlog</h3>
           <span className="text-on-surface-variant text-sm font-medium">
             ({stories.length} items)
@@ -126,6 +138,8 @@ export default function ProductBacklog({
                   onMove={onMoveToSprint}
                   moveIcon="arrow_upward"
                   moveTitle="Đưa vào Sprint"
+                  isSelected={selectedStories.includes(story.id)}
+                  onToggleSelect={onToggleSelect}
                 />
               ))
             ) : (
