@@ -3,16 +3,23 @@ import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableUserStoryCard } from './SortableUserStoryCard';
+import { TaskCard } from './TaskCard';
 
 export default function KanbanColumn({
   title,
   status,
-  stories = [],
+  items = [],
   sprintId,
-  onUpdateStory,
+  onUpdateItem,
+  itemType = 'story', // 'story' or 'task'
+  columnId,           // Optional custom ID for swimlanes
+  onAssign,
+  onEdit,
+  onDelete,
+  userRole = 'MEMBER'
 }) {
   const { setNodeRef, isOver } = useDroppable({
-    id: `column-${status}`,        // ID rõ ràng hơn để dễ debug
+    id: columnId || `column-${status}`,
   });
 
   return (
@@ -25,33 +32,42 @@ export default function KanbanColumn({
       <div className="flex items-center justify-between mb-4 px-2">
         <h4 className="font-semibold text-on-surface">{title}</h4>
         <span className="text-xs bg-surface px-3 py-1 rounded-full text-on-surface-variant font-medium">
-          {stories.length}
+          {items.length}
         </span>
       </div>
 
       {/* Vùng sortable */}
       <SortableContext
-        items={stories.map(s => s.id)}
+        items={items.map(item => itemType === 'task' ? `task-${item.id}` : item.id)}
         strategy={verticalListSortingStrategy}
       >
         <div className="space-y-3 flex-1">
-          {stories.map((story) => (
-            <SortableUserStoryCard
-              key={story.id}
-              id={story.id}
-              {...story}
-              variant="sprint"
-              userRole="MEMBER"
-              onAssign={() => {}}
-              onEdit={() => {}}
-              onDelete={() => {}}
-              onMove={onUpdateStory}           // Callback cập nhật status + sprint
-            />
+          {items.map((item) => (
+            itemType === 'story' ? (
+              <SortableUserStoryCard
+                key={item.id}
+                id={item.id}
+                {...item}
+                variant="sprint"
+                userRole={userRole}
+                onAssign={onAssign}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onMove={onUpdateItem}
+              />
+            ) : (
+              <TaskCard
+                key={item.id}
+                {...item}
+                id={`task-${item.id}`}
+                onDelete={() => {}}
+              />
+            )
           ))}
 
-          {stories.length === 0 && (
-            <div className="h-32 flex items-center justify-center border-2 border-dashed border-outline-variant/20 rounded-xl text-on-surface-variant/50 text-sm italic">
-              Chưa có task
+          {items.length === 0 && (
+            <div className="h-16 flex items-center justify-center border-2 border-dashed border-outline-variant/20 rounded-xl text-on-surface-variant/50 text-[10px] italic">
+              Trống
             </div>
           )}
         </div>

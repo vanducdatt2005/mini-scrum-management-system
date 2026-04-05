@@ -24,7 +24,8 @@ export default function ProductBacklog({
   selectedStories = [],
   onToggleSelect,
   onSelectAll,
-  projectId
+  projectId,
+  onAddTask
 }) {
   const isManagement = userRole === "PO" || userRole === "SM";
 
@@ -74,12 +75,12 @@ export default function ProductBacklog({
 
       console.log("API trả về:", res.data);
 
-      setServerStories(res.data.content || []);
+      setServerStories(res.data?.content || []);
       setServerPagination({
-        page: res.data.pagination.page || 1,
-        size: res.data.pagination.size || 12,
-        totalElements: res.data.pagination.totalElements || 0,
-        totalPages: res.data.pagination.totalPages || 1,
+        page: res.data?.pagination?.page || 1,
+        size: res.data?.pagination?.size || 12,
+        totalElements: res.data?.pagination?.totalElements || 0,
+        totalPages: res.data?.pagination?.totalPages || 1,
       });
 
       if (res.data.allTags) setAllServerTags(res.data.allTags);
@@ -255,6 +256,7 @@ export default function ProductBacklog({
                   moveTitle="Đưa vào Sprint"
                   isSelected={selectedStories.includes(story.id)}
                   onToggleSelect={onToggleSelect}
+                  onAddTask={onAddTask}
                 />
               ))
             ) : (

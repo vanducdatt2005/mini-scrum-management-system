@@ -29,7 +29,8 @@ export default function UserStoryCard({
   moveIcon = "arrow_upward",
   moveTitle = "Đưa vào Sprint",
   isSelected = false,
-  onToggleSelect
+  onToggleSelect,
+  onAddTask
 }) {
   const isSprint = variant === "sprint";
   const isManagement = userRole === "PO" || userRole === "SM";
@@ -114,6 +115,15 @@ export default function UserStoryCard({
                 {isManagement && onMove && (
                   <button onClick={(e) => { e.stopPropagation(); onMove(id); }} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-primary/10 text-primary transition-all" title={moveTitle}>
                     <span className="material-symbols-outlined text-[18px]">{moveIcon}</span>
+                  </button>
+                )}
+                {onAddTask && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onAddTask(id, title); }} 
+                    className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-primary/20 text-primary transition-all border border-primary/20" 
+                    title="Tạo Task mới"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">add_task</span>
                   </button>
                 )}
                 {!isManagement && (
@@ -202,6 +212,15 @@ export default function UserStoryCard({
             >
               <span className="material-symbols-outlined text-sm">delete</span>
             </button>
+            {onAddTask && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onAddTask(id, title); }}
+                className="p-1.5 bg-primary/10 hover:bg-primary rounded-lg text-primary hover:text-on-primary transition-all border border-primary/20"
+                title="Tạo Task mới"
+              >
+                <span className="material-symbols-outlined text-sm font-bold">add_task</span>
+              </button>
+            )}
           </div>
         )}
       </div>
