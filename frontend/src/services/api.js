@@ -38,6 +38,12 @@ export const getSprintDetails = (id) => api.get(`/sprint/${id}`);
 // REORDER
 export const reorderStories = (stories) => api.patch('/userstory/reorder', { stories });
 
+// TASKS
+export const createStoryTask = (storyId, data) => api.post(`/userstory/${storyId}/tasks`, data);
+export const updateTask = (id, data) => api.patch(`/tasks/${id}`, data);
+export const deleteTask = (id) => api.delete(`/tasks/${id}`);
+export const getStoryTasks = (storyId) => api.get(`/userstory/${storyId}/tasks`);
+
 // LỜI MỜI
 export const getInvitations = () => api.get('/invitations');
 export const respondToInvitation = (id, action) => api.post(`/invitations/${id}/respond`, { action });
