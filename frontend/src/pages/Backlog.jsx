@@ -1,3 +1,4 @@
+//frontend/src/pages/Backlog.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -413,15 +414,16 @@ export default function Backlog() {
           
           {/* MIDDLE: Product Backlog */}
           <ProductBacklog 
-            stories={filteredBacklogStories}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            filterPriority={filterPriority}
-            onFilterPriorityChange={setFilterPriority}
-            filterStatus={filterStatus}
-            onFilterStatusChange={setFilterStatus}
-            filterTag={filterTag}
-            onFilterTagChange={setFilterTag}  
+            projectId={projectId}
+            //stories={filteredBacklogStories}
+            //searchTerm={searchTerm}
+            //onSearchChange={setSearchTerm}
+            //filterPriority={filterPriority}
+            //onFilterPriorityChange={setFilterPriority}
+            //filterStatus={filterStatus}
+            //onFilterStatusChange={setFilterStatus}
+            //filterTag={filterTag}
+            //onFilterTagChange={setFilterTag}  
             onAddStory={handleAddStory} 
             onAssignStory={handleAssignStory} 
             onEdit={handleEditStory}
