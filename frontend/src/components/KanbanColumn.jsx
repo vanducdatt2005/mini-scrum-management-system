@@ -16,7 +16,9 @@ export default function KanbanColumn({
   onAssign,
   onEdit,
   onDelete,
-  userRole = 'MEMBER'
+  userRole = 'MEMBER',
+  onAssignTask,
+  onDeleteTask
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: columnId || `column-${status}`,
@@ -60,7 +62,8 @@ export default function KanbanColumn({
                 key={item.id}
                 {...item}
                 id={`task-${item.id}`}
-                onDelete={() => {}}
+                onDelete={() => onDeleteTask && onDeleteTask(item.id)}
+                onAssign={() => onAssignTask && onAssignTask(item.id)}
               />
             )
           ))}
