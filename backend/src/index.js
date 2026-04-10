@@ -6,6 +6,7 @@ const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const userstoryRoutes = require('./routes/userstoryRoutes');
+const standupRoutes = require('./routes/standupRoutes');
 
 dotenv.config();
 const app = express();
@@ -13,8 +14,6 @@ const prisma = new PrismaClient();
 
 app.use(cors());
 app.use(express.json());
-app.use('/api/user-stories', userstoryRoutes);   // ← Thiếu dòng này!
-
 // Middleware auth (dùng cho tất cả route cần quyền)
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]; // Bearer token
@@ -29,6 +28,9 @@ const authMiddleware = (req, res, next) => {
     res.status(401).json({ error: "Token không hợp lệ" });
   }
 };
+
+app.use('/api/user-stories', userstoryRoutes);
+app.use('/api/standups', authMiddleware, standupRoutes);
 
 console.log("🚀 Backend Mini Scrum Management System - Sprint 1 đang chạy...");
 
