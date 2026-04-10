@@ -5,7 +5,8 @@ export default function CreateTaskModal({
   onClose, 
   onSubmit, 
   loading, 
-  storyTitle 
+  storyTitle,
+  userRole = 'MEMBER'
 }) {
   const [form, setForm] = useState({
     title: '',
@@ -25,6 +26,8 @@ export default function CreateTaskModal({
     e.preventDefault();
     onSubmit(form);
   };
+
+  const canSetDeadline = userRole === 'PO';
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
@@ -75,16 +78,17 @@ export default function CreateTaskModal({
 
           {/* Deadline */}
           <div className="space-y-1.5">
-            <label className="text-sm font-bold text-on-surface-variant flex items-center gap-1.5">
+            <label className={`text-sm font-bold flex items-center gap-1.5 ${canSetDeadline ? 'text-on-surface-variant' : 'text-outline-variant opacity-50'}`}>
               <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-              Hạn chót
+              Hạn chót { !canSetDeadline && "(Chỉ dành cho PO)" }
             </label>
             <input
               type="date"
-              className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm disabled:bg-surface-container-low disabled:cursor-not-allowed"
               value={form.dueDate}
               onChange={e => setForm({ ...form, dueDate: e.target.value })}
-              disabled={loading}
+              disabled={loading || !canSetDeadline}
+              title={canSetDeadline ? "" : "Chỉ PO mới có quyền đặt hạn chót"}
             />
           </div>
 
