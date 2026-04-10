@@ -2,7 +2,7 @@
 import React from 'react';
 import KanbanColumn from './KanbanColumn';
 
-export default function SprintBoard({ sprint, stories = [], onUpdateStory, onAssignTask, onDeleteTask, onAddTask, userRole }) {
+export default function SprintBoard({ sprint, stories = [], members = [], onUpdateStory, onUpdateTask, onAssignTask, onDeleteTask, onAddTask, userRole }) {
   // STORIES ARE THE SWIMLANES
   // TASKS ARE THE ITEMS IN THE COLUMNS
 
@@ -58,27 +58,41 @@ export default function SprintBoard({ sprint, stories = [], onUpdateStory, onAss
               status="TODO"
               items={(story.tasks || []).filter(t => t.status === 'TODO')}
               itemType="task"
-              onUpdateItem={() => {}} // Handled by global DndContext in Backlog.jsx
+              members={members}
+              onUpdateItem={onUpdateTask}
               onAssignTask={onAssignTask}
               onDeleteTask={onDeleteTask}
+              userRole={userRole}
             />
             <KanbanColumn
               columnId={`taskcolumn-${story.id}-IN_PROGRESS`}
               status="IN_PROGRESS"
               items={(story.tasks || []).filter(t => t.status === 'IN_PROGRESS')}
               itemType="task"
+<<<<<<< HEAD
+              members={members}
+              onUpdateItem={onUpdateTask}
+              userRole={userRole}
+=======
               onUpdateItem={() => {}}
               onAssignTask={onAssignTask}
               onDeleteTask={onDeleteTask}
+>>>>>>> origin/main
             />
             <KanbanColumn
               columnId={`taskcolumn-${story.id}-DONE`}
               status="DONE"
               items={(story.tasks || []).filter(t => t.status === 'DONE')}
               itemType="task"
+<<<<<<< HEAD
+              members={members}
+              onUpdateItem={onUpdateTask}
+              userRole={userRole}
+=======
               onUpdateItem={() => {}}
               onAssignTask={onAssignTask}
               onDeleteTask={onDeleteTask}
+>>>>>>> origin/main
             />
           </div>
         ))}

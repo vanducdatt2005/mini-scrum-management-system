@@ -49,4 +49,7 @@ export const getStoryTasks = (storyId) => api.get(`/userstory/${storyId}/tasks`)
 export const getInvitations = () => api.get('/invitations');
 export const respondToInvitation = (id, action) => api.post(`/invitations/${id}/respond`, { action });
 
+// MEMBERS
+export const getProjectMembers = (projectId) => api.get(`/project/${projectId}/members`);
+
 export default api;
