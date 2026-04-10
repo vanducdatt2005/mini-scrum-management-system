@@ -30,7 +30,8 @@ import api, {
   createUserStory, 
   reorderStories,
   createStoryTask, 
-  updateTask 
+  updateTask,
+  getProjectMembers
 } from "../services/api";
 
 export default function Backlog() {
@@ -46,6 +47,7 @@ export default function Backlog() {
   const [sprints, setSprints] = useState([]);
   const [project, setProject] = useState(null);
   const [userRole, setUserRole] = useState("MEMBER");
+  const [members, setMembers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
   const [editingStory, setEditingStory] = useState(null);
@@ -92,12 +94,14 @@ export default function Backlog() {
       getStoriesByProject(projectId),
       getSprintsByProject(projectId),
       api.get(`/project/${projectId}`),
-      api.get(`/project/${projectId}/role`)
-    ]).then(([storiesRes, sprintsRes, projectRes, roleRes]) => {
+      api.get(`/project/${projectId}/role`),
+      getProjectMembers(projectId)
+    ]).then(([storiesRes, sprintsRes, projectRes, roleRes, membersRes]) => {
       setStories(Array.isArray(storiesRes.data) ? storiesRes.data : []);
       setSprints(Array.isArray(sprintsRes.data) ? sprintsRes.data : []);
       setProject(projectRes.data);
       setUserRole(roleRes.data.role);
+      setMembers(Array.isArray(membersRes.data) ? membersRes.data : []);
     }).catch(err => {
       console.error("Lỗi tải dữ liệu:", err);
       if (err.response?.status === 401) {
@@ -108,12 +112,14 @@ export default function Backlog() {
 
   const loadData = async () => {
     try {
-      const [storiesRes, sprintsRes] = await Promise.all([
+      const [storiesRes, sprintsRes, membersRes] = await Promise.all([
         getStoriesByProject(projectId),
-        getSprintsByProject(projectId)
+        getSprintsByProject(projectId),
+        getProjectMembers(projectId)
       ]);
       setStories(Array.isArray(storiesRes.data) ? storiesRes.data : []);
       setSprints(Array.isArray(sprintsRes.data) ? sprintsRes.data : []);
+      setMembers(Array.isArray(membersRes.data) ? membersRes.data : []);
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu:", err);
     }
@@ -574,8 +580,13 @@ export default function Backlog() {
             <TaskBoard 
               sprints={sprints}
               stories={stories}
+              members={members}
               onUpdateStory={async (storyId, data) => {
                 await updateUserStory(storyId, data);
+                await loadData();
+              }}
+              onUpdateTask={async (taskId, data) => {
+                await updateTask(taskId, data);
                 await loadData();
               }}
               userRole={userRole}

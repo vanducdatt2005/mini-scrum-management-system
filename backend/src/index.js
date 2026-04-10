@@ -440,7 +440,10 @@ app.get("/api/project/:projectId/userstories", async (req, res) => {
       ],
       include: { 
         assignee: { select: { fullName: true, email: true } },
-        tasks: { orderBy: { createdAt: "asc" } }
+        tasks: { 
+          include: { assignee: { select: { id: true, fullName: true, email: true } } },
+          orderBy: { createdAt: "asc" } 
+        }
       }
     });
     // Tránh browser cache để loadData() luôn lấy dữ liệu mới nhất
@@ -463,7 +466,11 @@ app.get("/api/project/:projectId/sprints", authMiddleware, async (req, res) => {
       include: { 
         stories: { 
           include: { 
-            tasks: { orderBy: { createdAt: "asc" } } 
+            assignee: { select: { fullName: true, email: true } },
+            tasks: { 
+              include: { assignee: { select: { id: true, fullName: true, email: true } } },
+              orderBy: { createdAt: "asc" } 
+            } 
           } 
         } 
       }
@@ -508,8 +515,11 @@ app.get("/api/sprint/:id", authMiddleware, async (req, res) => {
       include: { 
         stories: { 
           include: { 
-            assignee: { select: { fullName: true } },
-            tasks: { orderBy: { createdAt: "asc" } }
+            assignee: { select: { fullName: true, email: true } },
+            tasks: { 
+              include: { assignee: { select: { id: true, fullName: true, email: true } } },
+              orderBy: { createdAt: "asc" } 
+            }
           } 
         } 
       }
@@ -765,6 +775,7 @@ app.get("/api/userstory/:storyId/tasks", authMiddleware, async (req, res) => {
   try {
     const tasks = await prisma.task.findMany({
       where: { storyId },
+      include: { assignee: { select: { id: true, fullName: true, email: true } } },
       orderBy: { createdAt: "asc" }
     });
     res.json(tasks);

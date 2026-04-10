@@ -2,7 +2,7 @@
 import React from 'react';
 import KanbanColumn from './KanbanColumn';
 
-export default function SprintBoard({ sprint, stories = [], onUpdateStory, userRole }) {
+export default function SprintBoard({ sprint, stories = [], members = [], onUpdateStory, onUpdateTask, userRole }) {
   // STORIES ARE THE SWIMLANES
   // TASKS ARE THE ITEMS IN THE COLUMNS
 
@@ -50,21 +50,27 @@ export default function SprintBoard({ sprint, stories = [], onUpdateStory, userR
               status="TODO"
               items={(story.tasks || []).filter(t => t.status === 'TODO')}
               itemType="task"
-              onUpdateItem={() => {}} // Handled by global DndContext in Backlog.jsx
+              members={members}
+              onUpdateItem={onUpdateTask}
+              userRole={userRole}
             />
             <KanbanColumn
               columnId={`taskcolumn-${story.id}-IN_PROGRESS`}
               status="IN_PROGRESS"
               items={(story.tasks || []).filter(t => t.status === 'IN_PROGRESS')}
               itemType="task"
-              onUpdateItem={() => {}}
+              members={members}
+              onUpdateItem={onUpdateTask}
+              userRole={userRole}
             />
             <KanbanColumn
               columnId={`taskcolumn-${story.id}-DONE`}
               status="DONE"
               items={(story.tasks || []).filter(t => t.status === 'DONE')}
               itemType="task"
-              onUpdateItem={() => {}}
+              members={members}
+              onUpdateItem={onUpdateTask}
+              userRole={userRole}
             />
           </div>
         ))}
