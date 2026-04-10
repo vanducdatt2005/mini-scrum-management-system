@@ -607,6 +607,7 @@ export default function Backlog() {
                 await updateUserStory(storyId, data);
                 await loadData();
               }}
+              onEditStory={handleEditStory}
               onUpdateTask={async (taskId, data) => {
                 await updateTask(taskId, data);
                 await loadData();

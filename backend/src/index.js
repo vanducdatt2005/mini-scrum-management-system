@@ -421,12 +421,53 @@ app.get("/api/userstory/:id", async (req, res) => {
   try {
     const story = await prisma.userStory.findUnique({
       where: { id: req.params.id },
-      include: { project: true, assignee: { select: { fullName: true, email: true } } },
+      include: { 
+        project: true, 
+        assignee: { select: { fullName: true, email: true } },
+        comments: {
+          include: { user: { select: { fullName: true, email: true } } },
+          orderBy: { createdAt: "asc" }
+        }
+      },
     });
     if (!story) return res.status(404).json({ error: "Không tìm thấy User Story" });
     res.json(story);
   } catch (err) {
     res.status(500).json({ error: "Lỗi server" });
+  }
+});
+
+// US-045: LẤY BÌNH LUẬN CỦA USER STORY
+app.get("/api/userstory/:id/comments", async (req, res) => {
+  try {
+    const comments = await prisma.comment.findMany({
+      where: { userStoryId: req.params.id },
+      include: { user: { select: { fullName: true, email: true } } },
+      orderBy: { createdAt: "asc" }
+    });
+    res.json(comments);
+  } catch (err) {
+    res.status(500).json({ error: "Lỗi lấy bình luận" });
+  }
+});
+
+// US-045: TẠO BÌNH LUẬN MỚI
+app.post("/api/userstory/:id/comments", authMiddleware, async (req, res) => {
+  const { content } = req.body;
+  if (!content) return res.status(400).json({ error: "Nội dung bình luận không được để trống" });
+  
+  try {
+    const comment = await prisma.comment.create({
+      data: {
+        content,
+        userStoryId: req.params.id,
+        userId: req.user.userId
+      },
+      include: { user: { select: { fullName: true, email: true } } }
+    });
+    res.status(201).json(comment);
+  } catch (err) {
+    res.status(500).json({ error: "Lỗi khi lưu bình luận" });
   }
 });
 
@@ -442,6 +483,7 @@ app.get("/api/project/:projectId/userstories", async (req, res) => {
       ],
       include: { 
         assignee: { select: { fullName: true, email: true } },
+        comments: { select: { id: true } },
         tasks: { 
           orderBy: { createdAt: "asc" },
           include: { assignee: { select: { id: true, fullName: true, email: true } } }
@@ -469,6 +511,7 @@ app.get("/api/project/:projectId/sprints", authMiddleware, async (req, res) => {
         stories: { 
           include: { 
             assignee: { select: { fullName: true, email: true } },
+            comments: { select: { id: true } },
             tasks: { 
               include: { assignee: { select: { id: true, fullName: true, email: true } } },
               orderBy: { createdAt: "asc" } 

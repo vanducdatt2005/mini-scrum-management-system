@@ -30,7 +30,8 @@ export default function UserStoryCard({
   moveTitle = "Đưa vào Sprint",
   isSelected = false,
   onToggleSelect,
-  onAddTask
+  onAddTask,
+  comments = []
 }) {
   const isSprint = variant === "sprint";
   const isManagement = userRole === "PO" || userRole === "SM";
@@ -93,6 +94,18 @@ export default function UserStoryCard({
               <span className="material-symbols-outlined text-base">star</span>
               <span>{storyPoints || 0}</span>
             </div>
+
+            {/* US-045: Comments */}
+            {comments.length > 0 && (
+              <div 
+                className="flex items-center gap-1 text-primary bg-primary/5 px-2 py-0.5 rounded-lg border border-primary/20 hover:bg-primary/10 transition-colors"
+                title={`${comments.length} bình luận`}
+                onClick={(e) => { e.stopPropagation(); onEdit?.({ id, title, description, priority, storyPoints, assignee, tags, comments }); }}
+              >
+                <span className="material-symbols-outlined text-[14px]">forum</span>
+                <span className="text-[10px] font-bold">{comments.length}</span>
+              </div>
+            )}
 
             {/* Actions + Assignee */}
             <div className="flex items-center gap-2">
@@ -263,6 +276,18 @@ export default function UserStoryCard({
             <span className="material-symbols-outlined text-base">star</span>
             {storyPoints || 0}
           </div>
+
+          {/* US-045: Comments */}
+          {comments.length > 0 && (
+            <div 
+              className="flex items-center gap-1 text-primary bg-primary/5 px-3 py-1 rounded-lg border border-primary/20 hover:bg-primary/10 transition-colors cursor-pointer"
+              title={`${comments.length} bình luận`}
+              onClick={(e) => { e.stopPropagation(); onEdit?.({ id, title, description, priority, storyPoints, assignee, tags, comments }); }}
+            >
+              <span className="material-symbols-outlined text-base">forum</span>
+              <span className="text-sm font-bold">{comments.length}</span>
+            </div>
+          )}
         </div>
 
         {assignee?.fullName ? (
