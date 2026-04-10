@@ -64,6 +64,7 @@ export default function KanbanColumn({
                 {...item}
                 id={`task-${item.id}`}
                 members={members}
+                userRole={userRole}
                 onUpdate={(data) => onUpdateItem(item.id, data)}
                 onDelete={() => onDeleteTask && onDeleteTask(item.id)}
                 onAssign={() => onAssignTask && onAssignTask(item.id)}

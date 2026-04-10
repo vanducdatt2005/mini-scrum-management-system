@@ -84,6 +84,7 @@ model Task {
   userStory   UserStory @relation(fields: [storyId], references: [id], onDelete: Cascade)
   assigneeId  String?
   assignee    User?     @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  dueDate     DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

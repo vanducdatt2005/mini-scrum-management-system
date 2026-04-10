@@ -740,6 +740,7 @@ export default function Backlog() {
         onSubmit={handleCreateTask}
         loading={isSubmitting}
         storyTitle={taskStory?.title}
+        userRole={userRole}
       />
     </MainLayout>
   );
