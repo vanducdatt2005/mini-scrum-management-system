@@ -722,7 +722,7 @@ app.post("/api/project/:projectId/members/seed", async (req, res) => {
 // US-020: TẠO TASK CHO USER STORY
 app.post("/api/userstory/:storyId/tasks", authMiddleware, async (req, res) => {
   const { storyId } = req.params;
-  const { title, description, assigneeId } = req.body;
+  const { title, description, assigneeId, dueDate } = req.body;
   try {
     const task = await prisma.task.create({
       data: {
@@ -731,6 +731,7 @@ app.post("/api/userstory/:storyId/tasks", authMiddleware, async (req, res) => {
         storyId,
         status: "TODO",
         assigneeId: assigneeId || null,
+        dueDate: dueDate ? new Date(dueDate) : null,
       }
     });
     res.status(201).json(task);
@@ -742,7 +743,7 @@ app.post("/api/userstory/:storyId/tasks", authMiddleware, async (req, res) => {
 // US-021: CẬP NHẬT TASK (Status hoặc Details)
 app.patch("/api/tasks/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
-  const { title, description, status, assigneeId, storyId } = req.body;
+  const { title, description, status, assigneeId, storyId, dueDate } = req.body;
   try {
     const updated = await prisma.task.update({
       where: { id },
@@ -752,6 +753,7 @@ app.patch("/api/tasks/:id", authMiddleware, async (req, res) => {
         status: status !== undefined ? status : undefined,
         assigneeId: assigneeId !== undefined ? assigneeId : undefined,
         storyId: storyId !== undefined ? storyId : undefined,
+        dueDate: dueDate !== undefined ? (dueDate ? new Date(dueDate) : null) : undefined,
       }
     });
     res.json(updated);
