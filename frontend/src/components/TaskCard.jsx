@@ -2,7 +2,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-export function TaskCard({ id, title, description, status, assignee, assigneeId, members = [], onUpdate, onDelete }) {
+export function TaskCard({ id, title, description, status, assignee, assigneeId, members = [], onUpdate, onDelete, onAssign }) {
   const {
     attributes,
     listeners,
@@ -54,38 +54,46 @@ export function TaskCard({ id, title, description, status, assignee, assigneeId,
         </p>
       )}
 
-      <div className="mt-2 flex justify-end items-center gap-2">
+      <div className="mt-2 flex justify-between items-center border-t border-outline-variant/10 pt-2">
+        <div className="text-[9px] font-bold text-outline-variant uppercase tracking-wider">
+           {status}
+        </div>
+        
         <div 
           className="relative group/assignee"
           onClick={(e) => e.stopPropagation()}
         >
           {assignee ? (
             <div 
-              className="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px] font-bold shadow-sm"
+              className="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px] font-bold shadow-sm border border-primary/20"
               title={assignee.fullName || assignee.email}
             >
               { (assignee.fullName || assignee.email || '?').charAt(0).toUpperCase() }
             </div>
           ) : (
-            <div className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-outline border border-dashed border-outline-variant/30">
+            <div 
+              className="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center text-outline border border-dashed border-outline-variant/30 hover:bg-primary/10 hover:text-primary transition-colors"
+              title="Gán người phụ trách"
+            >
                <span className="material-symbols-outlined text-[12px]">person_add</span>
             </div>
           )}
 
-          {/* Hidden select that appears on hover or just a stylized select */}
-          <select
-            value={assigneeId || 'unassigned'}
-            onChange={handleAssigneeChange}
-            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-            title="Đổi người phụ trách"
-          >
-            <option value="unassigned">Chưa gán</option>
-            {members.map(m => (
-              <option key={m.user.id} value={m.user.id}>
-                {m.user.fullName || m.user.email}
-              </option>
-            ))}
-          </select>
+          {members.length > 0 && (
+            <select
+              value={assigneeId || 'unassigned'}
+              onChange={handleAssigneeChange}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+              title="Đổi người phụ trách"
+            >
+              <option value="unassigned">Chưa gán</option>
+              {members.map(m => (
+                <option key={m.user.id} value={m.user.id}>
+                  {m.user.fullName || m.user.email}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
     </div>

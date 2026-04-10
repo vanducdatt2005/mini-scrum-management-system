@@ -17,6 +17,7 @@ model User {
   projects        ProjectMember[]
   assignedStories UserStory[]     @relation("AssignedStories")
   assignedTasks   Task[]          @relation("AssignedTasks")
+  standups        DailyStandup[]
 }
 
 model Project {
@@ -28,6 +29,7 @@ model Project {
   members     ProjectMember[]
   userStories UserStory[]
   sprints     Sprint[]
+  standups    DailyStandup[]
 }
 
 model ProjectMember {
@@ -84,4 +86,18 @@ model Task {
   assignee    User?     @relation("AssignedTasks", fields: [assigneeId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model DailyStandup {
+  id        String   @id @default(cuid())
+  yesterday String
+  today     String
+  blockers  String?
+  date      DateTime @default(now())
+  userId    String
+  projectId String
+  user      User     @relation(fields: [userId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  @@index([projectId, date])
 }
