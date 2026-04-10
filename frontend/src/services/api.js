@@ -45,6 +45,10 @@ export const assignTaskByEmail = (id, email) => api.patch(`/tasks/${id}/assign`,
 export const deleteTask = (id) => api.delete(`/tasks/${id}`);
 export const getStoryTasks = (storyId) => api.get(`/userstory/${storyId}/tasks`);
 
+// COMMENTS
+export const getStoryComments = (storyId) => api.get(`/userstory/${storyId}/comments`);
+export const createStoryComment = (storyId, content) => api.post(`/userstory/${storyId}/comments`, { content });
+
 // LỜI MỜI
 export const getInvitations = () => api.get('/invitations');
 export const respondToInvitation = (id, action) => api.post(`/invitations/${id}/respond`, { action });
