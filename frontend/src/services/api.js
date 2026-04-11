@@ -62,6 +62,20 @@ export const createTaskComment = (taskId, content, authorId) =>
 export const getInvitations = () => api.get('/invitations');
 export const respondToInvitation = (id, action) => api.post(`/invitations/${id}/respond`, { action });
 
+export const uploadAttachment = (formData) => {
+  return api.post('/attachments/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+export const getAttachments = (entityType, entityId) => {
+  return api.get(`/attachments?${entityType}Id=${entityId}`);
+};
+// Thêm hàm này vào api.js
+export const deleteAttachment = (id) => {
+  return api.delete(`/attachments/${id}`);
+};
+
 // MEMBERS
 export const getProjectMembers = (projectId) => api.get(`/project/${projectId}/members`);
 
