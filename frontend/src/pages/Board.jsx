@@ -1,6 +1,6 @@
-//frontend/src/pages/Board.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/MainLayout";
 import BoardTopBar from "../components/BoardTopBar";
 import KanbanColumn from "../components/KanbanColumn";
@@ -16,6 +16,7 @@ export default function BoardPage() {
   const [editingStory, setEditingStory] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
     if (!projectId) {
@@ -135,6 +136,7 @@ export default function BoardPage() {
         onSubmit={handleModalSubmit}
         loading={isSubmitting}
         initialData={editingStory}
+        currentUser={currentUser}
       />
 
       {/* FAB */}

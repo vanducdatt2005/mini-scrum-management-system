@@ -7,13 +7,35 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const userstoryRoutes = require('./routes/userstoryRoutes');
 const standupRoutes = require('./routes/standupRoutes');
+const multer = require('multer');
+const path = require('path');
+// ... các import khác
+const commentRoutes = require('./routes/commentRoutes');
+const attachmentRoutes = require('./routes/attachmentRoutes');
+
 
 dotenv.config();
 const app = express();
 const prisma = new PrismaClient();
-
-app.use(cors());
+// Cấu hình CORS cho phép frontend truy cập
+app.use(cors({
+  origin: function (origin, callback) {
+    // Cho phép tất cả origin trong quá trình dev (bao gồm cả không có origin - Postman, mobile,...)
+    callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Đăng ký API
+app.use('/api', commentRoutes);
+app.use('/api/attachments', attachmentRoutes);
+
+
 // Middleware auth (dùng cho tất cả route cần quyền)
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]; // Bearer token
@@ -890,6 +912,10 @@ app.post("/api/tasks/:taskId/comments", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Lỗi khi lưu bình luận cho Task" });
   }
 });
+
+// Cho phép truy cập file tĩnh để xem/tải về (duplicate đã loại bỏ, dùng route file attachmentRoutes)
+
+
 // Lắng nghe cổng
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {

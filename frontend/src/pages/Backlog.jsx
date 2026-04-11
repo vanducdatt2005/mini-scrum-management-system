@@ -734,6 +734,7 @@ export default function Backlog() {
         onSubmit={handleModalSubmit}
         loading={isSubmitting}
         initialData={editingStory}
+        currentUser={currentUser}
       />
 
       <CreateTaskModal
