@@ -1,7 +1,7 @@
 //frontend/src/pages/Backlog.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import {useAuth} from "../context/AuthContext";
 // === Thêm thư viện Drag & Drop ===
 import { 
   DndContext, 
@@ -37,7 +37,7 @@ import api, {
 
 export default function Backlog() {
   const { projectId } = useParams();
-
+  const { user: currentUser } = useAuth();
   // === State cũ giữ nguyên (US-007 & US-008) ===
   const [searchTerm, setSearchTerm] = useState("");
   const [filterPriority, setFilterPriority] = useState("ALL");
@@ -619,6 +619,7 @@ export default function Backlog() {
                 setIsTaskModalOpen(true);
               }}
               userRole={userRole}
+              currentUser={currentUser}
             />
           )}
 
