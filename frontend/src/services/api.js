@@ -50,14 +50,8 @@ export const getStoryTasks = (storyId) => api.get(`/userstory/${storyId}/tasks`)
 export const getStoryComments = (storyId) => api.get(`/userstory/${storyId}/comments`);
 export const createStoryComment = (storyId, content) => api.post(`/userstory/${storyId}/comments`, { content });
 // TASK COMMENTS (US-046)
-export const getTaskComments = (taskId) => 
-  
-  api.get(`/tasks/${taskId}/comments`)
-
-
-export const createTaskComment = (taskId, content, authorId) => 
-  
-  api.post(`/tasks/${taskId}/comments`, { content, authorId });
+export const getTaskComments = (taskId) => api.get(`/tasks/${taskId}/comments`);
+export const createTaskComment = (taskId, content) => api.post(`/tasks/${taskId}/comments`, { content });
 // LỜI MỜI
 export const getInvitations = () => api.get('/invitations');
 export const respondToInvitation = (id, action) => api.post(`/invitations/${id}/respond`, { action });
