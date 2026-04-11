@@ -29,6 +29,7 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
+
 app.use('/api/user-stories', userstoryRoutes);
 app.use('/api/standups', authMiddleware, standupRoutes);
 
@@ -848,6 +849,47 @@ app.get("/api/userstory/:storyId/tasks", authMiddleware, async (req, res) => {
   }
 });
 
+// ==========================================
+// US-046: BÌNH LUẬN TRONG TASK
+// ==========================================
+
+// 1. Lấy danh sách bình luận của Task
+app.get("/api/tasks/:taskId/comments", async (req, res) => {
+  const { taskId } = req.params;
+  try {
+    const comments = await prisma.comment.findMany({
+      where: { taskId: taskId },
+      include: { user: { select: { fullName: true, email: true } } },
+      orderBy: { createdAt: "asc" }
+    });
+    res.json(comments);
+  } catch (err) {
+    res.status(500).json({ error: "Lỗi khi lấy bình luận của Task" });
+  }
+});
+
+// 2. Tạo bình luận mới cho Task
+app.post("/api/tasks/:taskId/comments", authMiddleware, async (req, res) => {
+  const { taskId } = req.params;
+  const { content } = req.body;
+  
+  if (!content) return res.status(400).json({ error: "Nội dung không được để trống" });
+
+  try {
+    const comment = await prisma.comment.create({
+      data: {
+        content,
+        taskId: taskId,
+        userId: req.user.userId // Lấy từ authMiddleware
+      },
+      include: { user: { select: { fullName: true, email: true } } }
+    });
+    res.status(201).json(comment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Lỗi khi lưu bình luận cho Task" });
+  }
+});
 // Lắng nghe cổng
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {

@@ -1,7 +1,9 @@
+//frontend/src/components/TaskCard.jsx
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
+import { useState } from 'react';
+import CommentSection from './CommentSection';
 export function TaskCard({ 
   id, 
   title, 
@@ -12,6 +14,7 @@ export function TaskCard({
   dueDate,
   members = [], 
   userRole = 'MEMBER',
+  currentUser,
   onUpdate, 
   onDelete, 
   onAssign 
@@ -24,6 +27,7 @@ export function TaskCard({
     transition,
     isDragging,
   } = useSortable({ id });
+  const [showComments, setShowComments] = useState(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -148,6 +152,27 @@ export function TaskCard({
             </select>
           )}
         </div>
+      </div>
+            {/* ==================== COMMENT SECTION - US-046 ==================== */}
+      <div className="mt-4 pt-4 border-t border-outline-variant/10">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowComments(!showComments);
+          }}
+          className="flex w-full items-center justify-center gap-2 py-2 text-xs font-medium text-on-surface-variant hover:text-primary transition-colors rounded-xl hover:bg-surface-container"
+        >
+          <span className="material-symbols-outlined text-base">chat</span>
+          {showComments ? 'Ẩn bình luận' : 'Xem bình luận'}
+        </button>
+
+       {showComments && (
+          <CommentSection
+            entityId={cleanId}
+            entityType="task"
+            currentUser={currentUser || { id: "temp-test-id", fullName: "Test User" }}
+          />
+        )}
       </div>
     </div>
   );
