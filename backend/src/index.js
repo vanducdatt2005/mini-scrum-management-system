@@ -159,8 +159,8 @@ app.post("/api/project/:projectId/invite", authMiddleware, async (req, res) => {
       where: { userId_projectId: { userId: requesterId, projectId } },
     });
 
-    if (!requester || requester.role !== "PO") {
-      return res.status(403).json({ error: "Chỉ Product Owner (PO) mới có quyền mời thành viên!" });
+    if (!requester || (requester.role !== "PO" && requester.role !== "SM")) {
+      return res.status(403).json({ error: "Chỉ Product Owner (PO) hoặc Scrum Master (SM) mới có quyền mời thành viên!" });
     }
 
     // Mời thành viên với trạng thái PENDING (dùng upsert để reset nếu họ đã từng ở trong dự án)
@@ -248,9 +248,9 @@ app.post("/api/project", authMiddleware, async (req, res) => {
       data: { name, description, goal },
     });
 
-    // Tự động gán người tạo làm Product Owner (PO)
+    // Tự động gán người tạo làm Scrum Master (SM) thay vì PO theo yêu cầu
     await prisma.projectMember.create({
-      data: { userId, projectId: project.id, role: "PO" }
+      data: { userId, projectId: project.id, role: "SM" }
     });
 
     res.json({ message: "Tạo Project thành công", projectId: project.id });
@@ -272,9 +272,9 @@ app.post("/api/project/:projectId/members", async (req, res) => {
       },
     });
 
-    if (!requester || requester.role !== "PO") {
+    if (!requester || (requester.role !== "PO" && requester.role !== "SM")) {
       return res.status(403).json({
-        error: "Chỉ Product Owner (PO) mới có quyền thêm thành viên!",
+        error: "Chỉ Product Owner (PO) hoặc Scrum Master (SM) mới có quyền thêm thành viên!",
       });
     }
 
@@ -607,9 +607,28 @@ app.patch("/api/sprint/:id", authMiddleware, async (req, res) => {
     const sprint = await prisma.sprint.findUnique({ where: { id } });
     if (!sprint) return res.status(404).json({ error: "Không tìm thấy Sprint" });
 
-    const hasPermission = await checkPOorSM(req.user.userId, sprint.projectId);
-    if (!hasPermission) {
-      return res.status(403).json({ error: "Chỉ Scrum Master hoặc PO mới được cập nhật Sprint." });
+    // Lấy thông tin role của người dùng trong dự án
+    const member = await prisma.projectMember.findUnique({
+      where: { userId_projectId: { userId: req.user.userId, projectId: sprint.projectId } },
+    });
+
+    if (!member || (member.role !== "PO" && member.role !== "SM")) {
+      return res.status(403).json({ error: "Bạn không có quyền cập nhật Sprint." });
+    }
+
+    // == US-049: Kiểm tra xung đột và quyền hạn khi Bắt đầu Sprint (Start Sprint) ==
+    if (status === 'ACTIVE' && sprint.status !== 'ACTIVE') {
+      // Chỉ SM mới được bắt đầu Sprint (Yêu cầu mới từ người dùng)
+      if (member.role !== "SM") {
+        return res.status(403).json({ error: "Chỉ Scrum Master mới có quyền bắt đầu Sprint!" });
+      }
+
+      const activeSprint = await prisma.sprint.findFirst({
+        where: { projectId: sprint.projectId, status: 'ACTIVE' }
+      });
+      if (activeSprint) {
+        return res.status(400).json({ error: `Dự án hiện đã có một Sprint đang hoạt động (${activeSprint.name}). Vui lòng kết thúc nó trước khi bắt đầu Sprint mới.` });
+      }
     }
 
     const updated = await prisma.sprint.update({
@@ -617,7 +636,7 @@ app.patch("/api/sprint/:id", authMiddleware, async (req, res) => {
       data: {
         name: name !== undefined ? name : undefined,
         goal: goal !== undefined ? goal : undefined,
-        startDate: startDate ? new Date(startDate) : undefined,
+        startDate: (status === 'ACTIVE' && !startDate && !sprint.startDate) ? new Date() : (startDate ? new Date(startDate) : undefined),
         endDate: endDate ? new Date(endDate) : undefined,
         status: status !== undefined ? status : undefined,
       }
@@ -721,8 +740,8 @@ app.patch("/api/project/:projectId/members/:userId/role", authMiddleware, async 
     const requester = await prisma.projectMember.findUnique({
       where: { userId_projectId: { userId: requesterId, projectId } },
     });
-    if (!requester || requester.role !== "PO") {
-      return res.status(403).json({ error: "Chỉ PO mới được phân quyền!" });
+    if (!requester || (requester.role !== "PO" && requester.role !== "SM")) {
+      return res.status(403).json({ error: "Chỉ PO hoặc SM mới được phân quyền!" });
     }
     if (requesterId === userId) {
       return res.status(400).json({ error: "Không thể đổi role của chính mình!" });
@@ -747,8 +766,8 @@ app.delete("/api/project/:projectId/members/:userId", authMiddleware, async (req
       where: { userId_projectId: { userId: requesterId, projectId } },
     });
 
-    if (!requester || requester.role !== "PO") {
-      return res.status(403).json({ error: "Chỉ Product Owner (PO) mới có quyền kick thành viên!" });
+    if (!requester || (requester.role !== "PO" && requester.role !== "SM")) {
+      return res.status(403).json({ error: "Chỉ Product Owner (PO) hoặc Scrum Master (SM) mới có quyền kick thành viên!" });
     }
 
     if (requesterId === userId) {
