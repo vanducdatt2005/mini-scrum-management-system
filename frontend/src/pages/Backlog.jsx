@@ -25,6 +25,7 @@ import CreateSprintModal from "../components/CreateSprintModal";
 import CreateTaskModal from "../components/CreateTaskModal";
 import StartSprintModal from "../components/StartSprintModal";
 import CompleteSprintModal from "../components/CompleteSprintModal";
+import SprintCeremonyModal from "../components/SprintCeremonyModal";
 import api, { 
   getStoriesByProject, 
   getSprintsByProject, 
@@ -55,8 +56,10 @@ export default function Backlog() {
   const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
   const [isStartSprintModalOpen, setIsStartSprintModalOpen] = useState(false);
   const [isCompleteSprintModalOpen, setIsCompleteSprintModalOpen] = useState(false);
+  const [isCeremonyModalOpen, setIsCeremonyModalOpen] = useState(false);
   const [sprintToStart, setSprintToStart] = useState(null);
   const [sprintToComplete, setSprintToComplete] = useState(null);
+  const [ceremonySprint, setCeremonySprint] = useState(null);
   const [editingStory, setEditingStory] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -453,7 +456,7 @@ export default function Backlog() {
       await loadData();
     } catch (err) {
       console.error("Lỗi cập nhật status Sprint:", err);
-      alert("Không thể cập nhật trạng thái Sprint.");
+      alert(err.response?.data?.error || "Không thể cập nhật trạng thái Sprint.");
     }
   };
 
@@ -666,6 +669,10 @@ export default function Backlog() {
                       setSprintToComplete({ sprint, stories });
                       setIsCompleteSprintModalOpen(true);
                     }}
+                    onCeremonyClick={(sprint) => {
+                      setCeremonySprint(sprint);
+                      setIsCeremonyModalOpen(true);
+                    }}
                     userRole={userRole}
                     selectedStories={selectedStories}
                     onToggleSelect={toggleStorySelection}
@@ -700,6 +707,10 @@ export default function Backlog() {
                     onStartClick={(sprint, stories) => {
                       setSprintToStart({ sprint, stories });
                       setIsStartSprintModalOpen(true);
+                    }}
+                    onCeremonyClick={(sprint) => {
+                      setCeremonySprint(sprint);
+                      setIsCeremonyModalOpen(true);
                     }}
                     userRole={userRole}
                     selectedStories={selectedStories}
@@ -813,6 +824,13 @@ export default function Backlog() {
         stories={sprintToComplete?.stories}
         plannedSprints={sprints.filter(s => s.status === 'PLANNED')}
         onCompleted={loadData}
+      />
+
+      <SprintCeremonyModal
+        isOpen={isCeremonyModalOpen}
+        onClose={() => setIsCeremonyModalOpen(false)}
+        sprint={ceremonySprint}
+        userRole={userRole}
       />
     </MainLayout>
   );
