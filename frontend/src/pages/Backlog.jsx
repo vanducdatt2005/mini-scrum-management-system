@@ -24,6 +24,7 @@ import CreateStoryModal from "../components/CreateStoryModal";
 import CreateSprintModal from "../components/CreateSprintModal";
 import CreateTaskModal from "../components/CreateTaskModal";
 import StartSprintModal from "../components/StartSprintModal";
+import CompleteSprintModal from "../components/CompleteSprintModal";
 import api, { 
   getStoriesByProject, 
   getSprintsByProject, 
@@ -53,7 +54,9 @@ export default function Backlog() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSprintModalOpen, setIsSprintModalOpen] = useState(false);
   const [isStartSprintModalOpen, setIsStartSprintModalOpen] = useState(false);
+  const [isCompleteSprintModalOpen, setIsCompleteSprintModalOpen] = useState(false);
   const [sprintToStart, setSprintToStart] = useState(null);
+  const [sprintToComplete, setSprintToComplete] = useState(null);
   const [editingStory, setEditingStory] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -659,6 +662,10 @@ export default function Backlog() {
                       setSprintToStart({ sprint, stories });
                       setIsStartSprintModalOpen(true);
                     }}
+                    onCompleteClick={(sprint, stories) => {
+                      setSprintToComplete({ sprint, stories });
+                      setIsCompleteSprintModalOpen(true);
+                    }}
                     userRole={userRole}
                     selectedStories={selectedStories}
                     onToggleSelect={toggleStorySelection}
@@ -797,6 +804,15 @@ export default function Backlog() {
         sprint={sprintToStart?.sprint}
         stories={sprintToStart?.stories}
         onStarted={loadData}
+      />
+
+      <CompleteSprintModal
+        isOpen={isCompleteSprintModalOpen}
+        onClose={() => setIsCompleteSprintModalOpen(false)}
+        sprint={sprintToComplete?.sprint}
+        stories={sprintToComplete?.stories}
+        plannedSprints={sprints.filter(s => s.status === 'PLANNED')}
+        onCompleted={loadData}
       />
     </MainLayout>
   );

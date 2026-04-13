@@ -7,11 +7,14 @@ import KanbanColumn from "../components/KanbanColumn";
 import FAB from "../components/FAB";
 import api, { getStoriesByProject, updateUserStory } from "../services/api";
 import CreateStoryModal from "../components/CreateStoryModal";
+import CompleteSprintModal from "../components/CompleteSprintModal";
 
 export default function BoardPage() {
   const { projectId } = useParams();
   const [stories, setStories] = useState([]);
   const [activeSprint, setActiveSprint] = useState(null);
+  const [plannedSprints, setPlannedSprints] = useState([]);
+  const [isCompleteSprintModalOpen, setIsCompleteSprintModalOpen] = useState(false);
   const [userRole, setUserRole] = useState("MEMBER");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStory, setEditingStory] = useState(null);
@@ -48,6 +51,8 @@ export default function BoardPage() {
       const active = (Array.isArray(sprintsRes.data) ? sprintsRes.data : [])
                       .find(s => s.status === 'ACTIVE');
       setActiveSprint(active);
+      setPlannedSprints((Array.isArray(sprintsRes.data) ? sprintsRes.data : [])
+                      .filter(s => s.status === 'PLANNED'));
 
       if (active) {
         setStories(Array.isArray(storiesRes.data) ? storiesRes.data.filter(s => s.sprintId === active.id) : []);
@@ -146,6 +151,15 @@ export default function BoardPage() {
                   Kết thúc ngày: {new Date(activeSprint.endDate).toLocaleDateString()}
                 </div>
               )}
+              {userRole === 'SM' && (
+                <button 
+                  onClick={() => setIsCompleteSprintModalOpen(true)}
+                  className="ml-auto px-4 py-1.5 bg-emerald-600/10 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-600/20 hover:bg-emerald-600 hover:text-white transition-all flex items-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-sm">task_alt</span>
+                  Kết thúc Sprint
+                </button>
+              )}
             </div>
             
             <div className="flex-1 overflow-x-auto pb-6">
@@ -188,6 +202,15 @@ export default function BoardPage() {
 
       {/* FAB */}
       <FAB onClick={() => { setEditingStory(null); setIsModalOpen(true); }} />
+
+      <CompleteSprintModal 
+        isOpen={isCompleteSprintModalOpen}
+        onClose={() => setIsCompleteSprintModalOpen(false)}
+        sprint={activeSprint}
+        stories={stories}
+        plannedSprints={plannedSprints}
+        onCompleted={loadStories}
+      />
     </MainLayout>
   );
 }
