@@ -90,30 +90,30 @@ export default function SprintSection({ sprint, stories = [], onMoveToBacklog, o
               />
             </div>
           </div>
-          {isManagement && (
-            <div className="flex items-center gap-2">
-              {/* Nút Start Sprint: Chỉ dành cho PLANNED */}
-              {sprint.status === 'PLANNED' && (
+          <div className="flex items-center gap-2">
+            {/* Nút Start Sprint: Chỉ dành cho PLANNED và Quản lý */}
+            {sprint.status === 'PLANNED' && isManagement && (
+              <button
+                onClick={handleStartSprint}
+                className="px-4 py-1.5 bg-primary text-on-primary text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-all shadow-md shadow-primary/20 flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-sm">play_arrow</span>
+                Start Sprint
+              </button>
+            )}
+
+            {/* Nút Sprint Ceremony và Complete Sprint: Dành cho ACTIVE */}
+            {sprint.status === 'ACTIVE' && (
+              <>
                 <button
-                  onClick={handleStartSprint}
-                  className="px-4 py-1.5 bg-primary text-on-primary text-xs font-black uppercase tracking-widest rounded-full hover:scale-105 transition-all shadow-md shadow-primary/20 flex items-center gap-1"
+                  onClick={() => onCeremonyClick && onCeremonyClick(sprint)}
+                  className="text-primary text-xs font-black uppercase tracking-widest flex items-center gap-1 hover:opacity-80 transition-opacity border border-primary/20 px-3 py-1.5 rounded-full"
                 >
-                  <span className="material-symbols-outlined text-sm">play_arrow</span>
-                  Start Sprint
+                  <span className="material-symbols-outlined text-sm">celebration</span>
+                  Sprint Ceremony
                 </button>
-              )}
 
-              {/* Nút Sprint Ceremony và Complete Sprint: Chỉ dành cho ACTIVE */}
-              {sprint.status === 'ACTIVE' && (
-                <>
-                  <button
-                    onClick={() => onCeremonyClick && onCeremonyClick(sprint)}
-                    className="text-primary text-xs font-black uppercase tracking-widest flex items-center gap-1 hover:opacity-80 transition-opacity border border-primary/20 px-3 py-1.5 rounded-full"
-                  >
-                    <span className="material-symbols-outlined text-sm">celebration</span>
-                    Sprint Ceremony
-                  </button>
-
+                {isManagement && (
                   <button
                     onClick={handleCompleteSprint}
                     className="text-primary text-xs font-black uppercase tracking-widest flex items-center gap-1 hover:opacity-80 transition-opacity border border-primary/20 px-3 py-1.5 rounded-full"
@@ -121,21 +121,21 @@ export default function SprintSection({ sprint, stories = [], onMoveToBacklog, o
                     <span className="material-symbols-outlined text-sm">done_all</span>
                     Complete Sprint
                   </button>
-                </>
-              )}
+                )}
+              </>
+            )}
 
-              {/* Nút Xem Ceremony: Khi đã kết thúc */}
-              {sprint.status === 'COMPLETED' && (
-                <button
-                  onClick={() => onCeremonyClick && onCeremonyClick(sprint)}
-                  className="text-on-surface-variant text-xs font-black uppercase tracking-widest flex items-center gap-1 hover:opacity-80 transition-opacity border border-outline-variant/20 px-3 py-1.5 rounded-full opacity-70"
-                >
-                  <span className="material-symbols-outlined text-sm">celebration</span>
-                  Xem Ceremony
-                </button>
-              )}
-            </div>
-          )}
+            {/* Nút Xem Ceremony: Khi đã kết thúc */}
+            {sprint.status === 'COMPLETED' && (
+              <button
+                onClick={() => onCeremonyClick && onCeremonyClick(sprint)}
+                className="text-on-surface-variant text-xs font-black uppercase tracking-widest flex items-center gap-1 hover:opacity-80 transition-opacity border border-outline-variant/20 px-3 py-1.5 rounded-full opacity-70"
+              >
+                <span className="material-symbols-outlined text-sm">celebration</span>
+                Xem Ceremony
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
