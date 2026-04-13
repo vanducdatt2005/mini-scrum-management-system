@@ -651,17 +651,22 @@ app.get("/api/project/:projectId/dashboard", async (req, res) => {
     const done = stories.filter(s => s.status === 'DONE').length;
     const inProgress = stories.filter(s => s.status === 'IN_PROGRESS').length;
     const todo = stories.filter(s => s.status === 'TODO').length;
+    const rejected = stories.filter(s => s.status === 'REJECTED').length;
     
     // Sum storyPoints properly
     const completedPoints = stories.filter(s => s.status === 'DONE').reduce((sum, s) => sum + (s.storyPoints || 0), 0);
     const totalPoints = stories.reduce((sum, s) => sum + (s.storyPoints || 0), 0);
-    const progressPercentage = total > 0 ? Math.round((done / total) * 100) : 0;
+    
+    // Only count stories that are NOT rejected for progress percentage
+    const totalActive = total - rejected;
+    const progressPercentage = totalActive > 0 ? Math.round((done / totalActive) * 100) : 0;
     
     res.json({
       totalStories: total,
       completedStories: done,
       inProgressStories: inProgress,
       todoStories: todo,
+      rejectedStories: rejected,
       completedPoints,
       totalPoints,
       progressPercentage
