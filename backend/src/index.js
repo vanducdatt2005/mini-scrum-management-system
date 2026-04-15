@@ -250,9 +250,9 @@ app.post("/api/project", authMiddleware, async (req, res) => {
       data: { name, description, goal },
     });
 
-    // Tự động gán người tạo làm Scrum Master (SM) thay vì PO theo yêu cầu
+    // Tự động gán người tạo làm Product Owner (PO)
     await prisma.projectMember.create({
-      data: { userId, projectId: project.id, role: "SM" }
+      data: { userId, projectId: project.id, role: "PO" }
     });
 
     res.json({ message: "Tạo Project thành công", projectId: project.id });
