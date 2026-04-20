@@ -80,4 +80,8 @@ export const saveSprintReview = (sprintId, data) => api.put(`/sprints/${sprintId
 export const getSprintRetrospective = (sprintId) => api.get(`/sprints/${sprintId}/retrospective`);
 export const saveSprintRetrospective = (sprintId, data) => api.put(`/sprints/${sprintId}/retrospective`, data);
 
+// NOTIFICATIONS
+export const getNotifications = () => api.get('/notifications');
+export const markNotificationAsRead = (id) => api.patch(`/notifications/${id}/read`);
+
 export default api;
