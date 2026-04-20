@@ -20,6 +20,7 @@ model User {
   standups        DailyStandup[]
   comments        Comment[]
   attachments Attachment[]
+  notifications Notification[]
 }
 
 model Project {
@@ -155,4 +156,14 @@ model Attachment {
 
   userId      String
   user        User       @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  type      String   @default("SYSTEM") // SYSTEM, PROJECT_INVITE, etc.
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
