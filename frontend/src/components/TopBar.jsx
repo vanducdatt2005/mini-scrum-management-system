@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { getInvitations, respondToInvitation } from "../services/api";
 import NotificationBell from "./NotificationBell";
 import useNotifications from '../hooks/useNotifications.jsx';
+import ThemeToggle from "./ThemeToggle";
+
 export default function TopBar() {
   const { toggle } = useSidebar();
   const navigate = useNavigate();
@@ -15,9 +17,6 @@ export default function TopBar() {
   useEffect(() => {
     fetchData();
     const timer = setInterval(fetchData, 60000);
-
-    // Tự động mở thông báo được xử lý trong NotificationBell
-
     return () => clearInterval(timer);
   }, [window.location.search]);
 
@@ -42,8 +41,6 @@ export default function TopBar() {
     }
   };
 
-
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -51,12 +48,12 @@ export default function TopBar() {
   };
 
   return (
-    <header className="flex justify-between items-center w-full px-4 md:px-8 h-16 sticky top-0 bg-[#f8f9fb]/80 backdrop-blur-xl z-30 border-b border-outline-variant/10">
+    <header className="flex justify-between items-center w-full px-4 md:px-8 h-16 sticky top-0 bg-surface/80 backdrop-blur-xl z-30 border-b border-outline-variant/10">
       {/* Search + Menu */}
       <div className="flex items-center gap-3 md:gap-6 w-full max-w-sm md:max-w-none">
         <button 
           onClick={toggle}
-          className="p-2 -ml-2 text-[#44474e] hover:bg-[#f1f3f8] rounded-full transition-colors md:hidden"
+          className="p-2 -ml-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors md:hidden"
         >
           <span className="material-symbols-outlined">menu</span>
         </button>
@@ -68,14 +65,16 @@ export default function TopBar() {
           <input
             type="text"
             placeholder="Search tasks..."
-            className="pl-9 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 w-full md:w-64 transition-all"
+            className="pl-9 pr-4 py-2 bg-surface-container-low border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 w-full md:w-64 text-on-surface transition-all"
           />
         </div>
       </div>
 
       {/* Right Actions */}
       <div className="flex items-center gap-4">
-        <button className="hidden sm:block p-2 text-[#44474e] hover:bg-[#f1f3f8] rounded-full transition-colors">
+        <ThemeToggle />
+        
+        <button className="hidden sm:block p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
           <span className="material-symbols-outlined">timer</span>
         </button>
 
@@ -99,7 +98,7 @@ export default function TopBar() {
           {showMenu && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)}></div>
-              <div className="absolute right-0 mt-3 w-56 bg-white rounded-3xl shadow-2xl border border-outline-variant/10 py-3 z-50 animate-in fade-in slide-in-from-top-3 duration-200">
+              <div className="absolute right-0 mt-3 w-56 bg-surface-container-lowest rounded-3xl shadow-2xl border border-outline-variant/10 py-3 z-50 animate-in fade-in slide-in-from-top-3 duration-200">
                 <div className="px-6 py-4 border-b border-outline-variant/10 mb-2">
                   <div className="text-sm font-bold text-on-surface">{currentUser.fullName}</div>
                   <div className="text-[10px] font-medium text-on-surface-variant opacity-60">ID: {currentUser.id?.slice(-8)}</div>
