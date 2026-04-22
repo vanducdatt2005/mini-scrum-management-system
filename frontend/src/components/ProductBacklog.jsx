@@ -1,8 +1,9 @@
 // frontend/src/components/ProductBacklog.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableUserStoryCard } from "./SortableUserStoryCard";
+import useSocket from '../hooks/useSocket';
 import api from '../services/api';
 
 export default function ProductBacklog({
@@ -54,11 +55,12 @@ export default function ProductBacklog({
   const [internalFilterTag, setInternalFilterTag] = useState(filterTag);
 
   // Fetch từ API
-  const fetchServerBacklog = async () => {
+  const fetchServerBacklog = useCallback(async () => {
     if (!projectId) return;
 
     setLoading(true);
     try {
+      const token = localStorage.getItem('token');
       const params = {
         projectId,
         page: serverPagination.page,
@@ -71,7 +73,10 @@ export default function ProductBacklog({
 
       console.log("Đang gọi API với params:", params);
 
-      const res = await api.get('/user-stories/backlog', { params });
+      const res = await api.get('/user-stories/backlog', { 
+        params,
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
 
       console.log("API trả về:", res.data);
 
@@ -89,7 +94,7 @@ export default function ProductBacklog({
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId, serverPagination.page, internalSearchTerm, internalFilterPriority, internalFilterStatus, internalFilterTag]);
 
   // Gọi API khi projectId hoặc các filter thay đổi
   useEffect(() => {
@@ -102,6 +107,21 @@ export default function ProductBacklog({
   const resetToFirstPage = () => {
     setServerPagination(prev => ({ ...prev, page: 1 }));
   };
+
+  // US-028
+  const handleRealTimeUpdate = useCallback((data) => {
+    if (data && (data.action === 'created' || data.action === 'deleted')) {
+      setServerPagination(prev => {
+        if (prev.page === 1) fetchServerBacklog();
+        return { ...prev, page: 1 };
+      });
+    } else {
+      fetchServerBacklog();
+    }
+  }, [fetchServerBacklog]);
+
+// Truyền handleRealTimeUpdate vào useSocket
+useSocket(projectId, handleRealTimeUpdate);
 
   // ==================== Logic cũ giữ nguyên ====================
   useEffect(() => {
