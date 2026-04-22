@@ -45,29 +45,29 @@ export default function Dashboard() {
   if (projects.length === 0) {
     return (
       <MainLayout activePage="Dashboard">
-        <div className="max-w-4xl mx-auto px-4 py-20 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <div className="bg-white rounded-[3rem] p-8 md:p-16 shadow-2xl shadow-primary/5 border border-outline-variant/5 text-center flex flex-col items-center">
-            <div className="w-24 h-24 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary mb-8 animate-bounce transition-all">
-              <span className="material-symbols-outlined text-5xl">rocket_launch</span>
+        <div className="max-w-4xl mx-auto px-4 py-10 md:py-20 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          <div className="bg-surface-container-lowest rounded-[2rem] md:rounded-[3rem] p-8 md:p-16 shadow-2xl shadow-primary/5 border border-outline-variant/5 text-center flex flex-col items-center">
+            <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center text-primary mb-8 animate-bounce transition-all">
+              <span className="material-symbols-outlined text-4xl md:text-5xl">rocket_launch</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-on-surface tracking-tighter mb-4 font-['Manrope']">
+            <h2 className="text-3xl md:text-5xl font-black text-on-surface tracking-tighter mb-4 font-['Manrope']">
               Chào mừng bạn đến với <span className="text-primary tracking-tight">mINI Scrum</span>
             </h2>
-            <p className="text-on-surface-variant text-lg max-w-lg mb-10 leading-relaxed font-medium">
+            <p className="text-on-surface-variant text-base md:text-lg max-w-lg mb-10 leading-relaxed font-medium">
               Có vẻ như bạn chưa tham gia vào dự án nào. Hãy bắt đầu bằng cách tạo dự án mới hoặc chờ lời mời từ đồng nghiệp trên thanh thông báo.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <button 
                 onClick={() => navigate("/create-project")}
-                className="px-10 py-4 bg-primary text-on-primary rounded-2xl font-black shadow-xl shadow-primary/20 hover:scale-[0.98] active:scale-95 transition-all text-sm flex items-center gap-3"
+                className="w-full sm:w-auto px-10 py-4 bg-primary text-on-primary rounded-2xl font-black shadow-xl shadow-primary/20 hover:scale-[0.98] active:scale-95 transition-all text-sm flex items-center justify-center gap-3"
               >
                 <span className="material-symbols-outlined">add_circle</span>
                 Tạo dự án đầu tiên
               </button>
               <button 
                 onClick={() => navigate("/dashboard?showNotifications=true")}
-                className="px-10 py-4 bg-surface-container-low text-on-surface-variant rounded-2xl font-bold text-sm border border-outline-variant/10 flex items-center gap-3 hover:bg-primary/5 transition-all"
+                className="w-full sm:w-auto px-10 py-4 bg-surface-container-low text-on-surface-variant rounded-2xl font-bold text-sm border border-outline-variant/10 flex items-center justify-center gap-3 hover:bg-primary/5 transition-all"
               >
                 <span className="material-symbols-outlined">notifications_active</span>
                 Kiểm tra lời mời
@@ -108,8 +108,8 @@ export default function Dashboard() {
         </div>
 
         {/* Project Selector Section */}
-        <div className="mb-10 overflow-x-auto pb-4 hide-scrollbar">
-          <div className="flex gap-4 px-2">
+        <div className="mb-10 overflow-x-auto pb-4 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-2">
+          <div className="flex gap-4">
             {projects.map(p => (
               <div
                 key={p.id}
@@ -117,10 +117,10 @@ export default function Dashboard() {
                 className={`flex-shrink-0 p-1.5 rounded-[2rem] border transition-all cursor-pointer flex items-center gap-3 min-w-[240px] relative group ${
                   projectId === p.id 
                   ? "bg-primary text-on-primary border-primary shadow-2xl shadow-primary/30 scale-105 z-10" 
-                  : "bg-white text-on-surface border-outline-variant/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+                  : "bg-surface-container-lowest text-on-surface border-outline-variant/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
                 }`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg ${projectId === p.id ? "bg-white/20" : "bg-primary/10 text-primary"}`}>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg ${projectId === p.id ? "bg-white/20 text-white" : "bg-primary/10 text-primary"}`}>
                   {p.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="text-left flex-1 min-w-0 pr-2">
