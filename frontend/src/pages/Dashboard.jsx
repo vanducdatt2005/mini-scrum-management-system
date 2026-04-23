@@ -108,15 +108,15 @@ export default function Dashboard() {
         </div>
 
         {/* Project Selector Section */}
-        <div className="mb-10 overflow-x-auto pb-4 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-2">
+        <div className="mb-10 overflow-x-auto pb-4 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-2 snap-x">
           <div className="flex gap-4">
             {projects.map(p => (
               <div
                 key={p.id}
                 onClick={() => setProjectId(p.id)}
-                className={`flex-shrink-0 p-1.5 rounded-[2rem] border transition-all cursor-pointer flex items-center gap-3 min-w-[240px] relative group ${
+                className={`snap-start flex-shrink-0 p-1.5 rounded-[2rem] border transition-all cursor-pointer flex items-center gap-3 min-w-[260px] md:min-w-[280px] relative group ${
                   projectId === p.id 
-                  ? "bg-primary text-on-primary border-primary shadow-2xl shadow-primary/30 scale-105 z-10" 
+                  ? "bg-primary text-on-primary border-primary shadow-2xl shadow-primary/30 md:scale-105 z-10" 
                   : "bg-surface-container-lowest text-on-surface border-outline-variant/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
                 }`}
               >
@@ -126,7 +126,7 @@ export default function Dashboard() {
                 <div className="text-left flex-1 min-w-0 pr-2">
                   <div className="font-extrabold text-sm block truncate pr-8">{p.name}</div>
                   <div className={`text-[10px] font-black opacity-70 uppercase tracking-widest ${projectId === p.id ? "text-white/80" : "text-primary"}`}>
-                    {p.key}
+                    {p.key || "Scrum Project"}
                   </div>
                 </div>
 
@@ -143,28 +143,25 @@ export default function Dashboard() {
                     <span className="material-symbols-outlined text-lg">arrow_forward</span>
                   </button>
                 )}
-                
-                {/* Visual Hint for Unselected Cards */}
-                {projectId !== p.id && (
-                  <span className="material-symbols-outlined absolute right-4 text-primary/0 group-hover:text-primary/40 transition-all transform translate-x-2 group-hover:translate-x-0">
-                    touch_app
-                  </span>
-                )}
               </div>
             ))}
           </div>
         </div>
 
         {stats ? (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <SprintProgress completed={stats.progressPercentage} done={stats.completedStories} left={stats.todoStories + stats.inProgressStories} />
-            <MyTasks />
-            <RecentActivity />
-            <SprintStats
-              timeRemaining="4 Days 12h"
-              velocity={stats.completedPoints || 0}
-              capacity={stats.totalPoints || 0}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 md:pb-0">
+            <div className="md:col-span-8 flex flex-col gap-6">
+              <SprintProgress completed={stats.progressPercentage} done={stats.completedStories} left={stats.todoStories + stats.inProgressStories} />
+              <MyTasks />
+            </div>
+            <div className="md:col-span-4 flex flex-col gap-6">
+              <SprintStats
+                timeRemaining="4 Days 12h"
+                velocity={stats.completedPoints || 0}
+                capacity={stats.totalPoints || 0}
+              />
+              <RecentActivity />
+            </div>
           </div>
         ) : (
           <div className="py-20 flex flex-col items-center gap-4 text-on-surface-variant opacity-50">

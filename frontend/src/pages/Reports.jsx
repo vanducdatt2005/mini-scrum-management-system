@@ -114,16 +114,16 @@ export default function Reports() {
             <p className="text-on-surface-variant font-medium">Theo dõi hiệu suất và tiến độ của Sprint</p>
           </div>
 
-          <div className="flex bg-surface-container-high p-1 rounded-2xl border border-outline-variant/10 self-start md:self-auto">
+          <div className="flex bg-surface-container-high p-1 rounded-2xl border border-outline-variant/10 w-full md:w-auto">
             <button 
               onClick={() => setActiveTab('burndown')}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'burndown' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-primary'}`}
+              className={`flex-1 md:flex-none px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'burndown' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-primary'}`}
             >
               Burndown
             </button>
             <button 
               onClick={() => setActiveTab('velocity')}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'velocity' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-primary'}`}
+              className={`flex-1 md:flex-none px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'velocity' ? 'bg-primary text-on-primary shadow-lg shadow-primary/20' : 'text-on-surface-variant hover:text-primary'}`}
             >
               Velocity
             </button>

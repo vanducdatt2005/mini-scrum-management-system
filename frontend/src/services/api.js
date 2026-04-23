@@ -22,6 +22,8 @@ export const registerUser = (data) => api.post('/register', data);
 export const addMemberToProject = (projectId, data) =>
   api.post(`/project/${projectId}/members`, data);
 
+export const updateProject = (id, data) => api.patch(`/project/${id}`, data);
+
 export const getUserStory = (id) => api.get(`/userstory/${id}`);
 export const createUserStory = (data) => api.post('/userstory', data);
 export const updateUserStory = (id, data) => api.patch(`/userstory/${id}`, data);
