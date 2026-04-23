@@ -78,12 +78,14 @@ export default function Backlog() {
 
   // Cấu hình Drag & Drop
   const sensors = useSensors(
-    useSensor(MouseSensor),
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: 10 },
+    }),
     useSensor(TouchSensor, {
-      activationConstraint: { delay: 250, tolerance: 5 },
+      activationConstraint: { delay: 300, tolerance: 10 },
     }),
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
+      activationConstraint: { distance: 10 },
     })
   );
 
@@ -538,21 +540,21 @@ export default function Backlog() {
       header={<BacklogHeader projectId={projectId} projectName={project?.name} />}
       projectId={projectId}
     >
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="space-y-6 md:space-y-10 pb-20">
-
+      <div className="space-y-6 md:space-y-10 pb-20 w-full max-w-full overflow-x-hidden">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
           {/* TAB CHUYỂN ĐỔI - Giống Jira */}
           <div className="flex border-b border-outline-variant mb-6">
             <button
               onClick={() => setActiveTab("backlog")}
-              className={`px-6 py-3 font-medium text-sm transition-all border-b-2 flex items-center gap-2 ${activeTab === "backlog"
+              className={`px-6 py-3 font-medium text-sm transition-all border-b-2 flex items-center gap-2 ${
+                activeTab === "backlog"
                   ? "border-primary text-primary"
                   : "border-transparent hover:text-on-surface"
-                }`}
+              }`}
             >
               <span className="material-symbols-outlined">inventory_2</span>
               Product Backlog
@@ -560,10 +562,11 @@ export default function Backlog() {
 
             <button
               onClick={() => setActiveTab("taskboard")}
-              className={`px-6 py-3 font-medium text-sm transition-all border-b-2 flex items-center gap-2 ${activeTab === "taskboard"
+              className={`px-6 py-3 font-medium text-sm transition-all border-b-2 flex items-center gap-2 ${
+                activeTab === "taskboard"
                   ? "border-primary text-primary"
                   : "border-transparent hover:text-on-surface"
-                }`}
+              }`}
             >
               <span className="material-symbols-outlined">view_kanban</span>
               Task Board
@@ -572,7 +575,7 @@ export default function Backlog() {
 
           {/* MIDDLE: Product Backlog */}
           {activeTab === "backlog" ? (
-            <ProductBacklog 
+            <ProductBacklog
               projectId={projectId}
               stories={filteredBacklogStories}
               searchTerm={searchTerm}
@@ -582,37 +585,35 @@ export default function Backlog() {
               filterStatus={filterStatus}
               onFilterStatusChange={setFilterStatus}
               filterTag={filterTag}
-              onFilterTagChange={setFilterTag}  
-              onAddStory={handleAddStory} 
-              onAssignStory={handleAssignStory} 
+              onFilterTagChange={setFilterTag}
+              onAddStory={handleAddStory}
+              onAssignStory={handleAssignStory}
               onEdit={handleEditStory}
               onDelete={handleDeleteStory}
-              userRole={userRole} 
+              userRole={userRole}
               selectedStories={selectedStories}
               onToggleSelect={toggleStorySelection}
               onSelectAll={handleSelectAll}
               onMoveToSprint={async (id) => {
-                const latestSprint = sprints.find(s => s.status === 'PLANNED') || sprints[0];
+                const latestSprint = sprints.find((s) => s.status === "PLANNED") || sprints[0];
                 if (!latestSprint) {
                   alert("Vui lòng tạo một Sprint trước.");
                   return;
                 }
-                  if (window.confirm(`Đưa User Story này vào ${latestSprint.name}?`)) {
-                    try {
-                      await updateUserStory(id, { sprintId: latestSprint.id, status: "TODO" });
-                      await loadData();
-                    } catch (err) {
-                    }
-                  }
-                }}
-                onAddTask={(id, title) => {
-                  console.log("Opening Task Modal for story:", id, title);
-                  setTaskStory({ id, title });
-                  setIsTaskModalOpen(true);
-                }}
-              />
+                if (window.confirm(`Đưa User Story này vào ${latestSprint.name}?`)) {
+                  try {
+                    await updateUserStory(id, { sprintId: latestSprint.id, status: "TODO" });
+                    await loadData();
+                  } catch (err) {}
+                }
+              }}
+              onAddTask={(id, title) => {
+                setTaskStory({ id, title });
+                setIsTaskModalOpen(true);
+              }}
+            />
           ) : (
-            <TaskBoard 
+            <TaskBoard
               sprints={sprints}
               stories={stories}
               members={members}
@@ -655,12 +656,12 @@ export default function Backlog() {
             </div>
 
             <div className="space-y-4">
-              {activeSprints.map(sprint => (
+              {activeSprints.map((sprint) => (
                 <div key={sprint.id} className="relative">
                   <div className="absolute -left-2 top-0 bottom-0 w-1 bg-primary rounded-full shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)] z-10"></div>
                   <SprintSection
                     sprint={sprint}
-                    stories={stories.filter(s => s.sprintId === sprint.id)}
+                    stories={stories.filter((s) => s.sprintId === sprint.id)}
                     onAssign={handleAssignStory}
                     onEdit={handleEditStory}
                     onDelete={handleDeleteStory}
@@ -699,11 +700,11 @@ export default function Backlog() {
               ))}
 
               {plannedSprints.length > 0 ? (
-                plannedSprints.map(sprint => (
+                plannedSprints.map((sprint) => (
                   <SprintSection
                     key={sprint.id}
                     sprint={sprint}
-                    stories={stories.filter(s => s.sprintId === sprint.id)}
+                    stories={stories.filter((s) => s.sprintId === sprint.id)}
                     onAssign={handleAssignStory}
                     onEdit={handleEditStory}
                     onDelete={handleDeleteStory}
@@ -745,8 +746,8 @@ export default function Backlog() {
               )}
             </div>
           </div>
-        </div>
-      </DndContext>
+        </DndContext>
+      </div>
 
       {/* Floating Action Bar for Bulk Selection */}
       {selectedStories.length > 0 && userRole !== "MEMBER" && (

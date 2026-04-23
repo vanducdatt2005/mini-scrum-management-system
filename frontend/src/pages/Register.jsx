@@ -4,11 +4,21 @@ import axios from 'axios';
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function Register() {
-  const [form, setForm] = useState({ email: '', password: '', fullName: '' });
+  const [form, setForm] = useState({ email: '', password: '', confirmPassword: '', fullName: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+
+  const passwordRequirements = [
+    { label: 'Ít nhất 8 ký tự', test: (p) => p.length >= 8 },
+    { label: 'Chữ hoa (A-Z)', test: (p) => /[A-Z]/.test(p) },
+    { label: 'Chữ thường (a-z)', test: (p) => /[a-z]/.test(p) },
+    { label: 'Số (0-9)', test: (p) => /\d/.test(p) },
+    { label: 'Ký tự đặc biệt (@, $, !, ...)', test: (p) => /[@$!%*?&]/.test(p) },
+  ];
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -17,6 +27,19 @@ export default function Register() {
     setError(''); 
     setSuccess(''); 
     setLoading(true);
+    if (form.password !== form.confirmPassword) {
+      setError('Mật khẩu nhập lại không khớp!');
+      setLoading(false);
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(form.password)) {
+      setError('Mật khẩu không đạt yêu cầu bảo mật!');
+      setLoading(false);
+      return;
+    }
+
     try {
       const baseUrl = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000/api`;
       const res = await axios.post(`${baseUrl}/register`, form);
@@ -94,17 +117,70 @@ export default function Register() {
           </div>
           <div className="space-y-2">
             <label className="text-sm font-bold text-on-surface-variant ml-1">Mật khẩu</label>
-            <input
-              type="password" 
-              name="password" 
-              placeholder="••••••••"
-              value={form.password} 
-              onChange={handleChange}
-              className="w-full px-5 py-4 bg-surface-container-low border border-outline-variant/10 rounded-2xl text-on-surface focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium"
-              required
-            />
+            <div className="relative group">
+              <input
+                type={showPassword ? "text" : "password"} 
+                name="password" 
+                placeholder="••••••••"
+                value={form.password} 
+                onChange={handleChange}
+                className="w-full px-5 py-4 bg-surface-container-low border border-outline-variant/10 rounded-2xl text-on-surface focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium pr-12"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-primary transition-colors focus:outline-none"
+              >
+                <span className="material-symbols-outlined text-xl">
+                  {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
+            
+            {/* Password Requirements UI */}
+            <div className="mt-4 p-4 bg-surface-container rounded-2xl border border-outline-variant/5 space-y-2 animate-in fade-in slide-in-from-top-1 duration-500">
+              <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/50 mb-2 px-1">Yêu cầu mật khẩu</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                {passwordRequirements.map((req, index) => {
+                  const isMet = req.test(form.password);
+                  return (
+                    <div key={index} className="flex items-center gap-2 px-1">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-500 ${isMet ? 'bg-primary shadow-lg shadow-primary/20 scale-110' : 'bg-outline-variant/20'}`}>
+                        <span className={`material-symbols-outlined text-[10px] font-bold ${isMet ? 'text-on-primary' : 'text-transparent'}`}>check</span>
+                      </div>
+                      <span className={`text-[11px] font-bold transition-colors duration-500 ${isMet ? 'text-on-surface' : 'text-on-surface-variant/40'}`}>
+                        {req.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-          
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-on-surface-variant ml-1">Nhập lại mật khẩu</label>
+            <div className="relative group">
+              <input
+                type={showConfirmPassword ? "text" : "password"} 
+                name="confirmPassword" 
+                placeholder="••••••••"
+                value={form.confirmPassword} 
+                onChange={handleChange}
+                className="w-full px-5 py-4 bg-surface-container-low border border-outline-variant/10 rounded-2xl text-on-surface focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all font-medium pr-12"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-primary transition-colors focus:outline-none"
+              >
+                <span className="material-symbols-outlined text-xl">
+                  {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
+          </div>
           <button 
             type="submit" 
             disabled={loading}

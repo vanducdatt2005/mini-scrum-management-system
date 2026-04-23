@@ -35,12 +35,14 @@ export default function BoardPage() {
 
   // Cấu hình Sensors cho Drag & Drop
   const sensors = useSensors(
-    useSensor(MouseSensor),
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: 10 },
+    }),
     useSensor(TouchSensor, {
-      activationConstraint: { delay: 250, tolerance: 5 },
+      activationConstraint: { delay: 300, tolerance: 10 },
     }),
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
+      activationConstraint: { distance: 10 },
     })
   );
 
@@ -217,12 +219,20 @@ export default function BoardPage() {
               collisionDetection={closestCorners}
               onDragEnd={handleDragEnd}
             >
-              <div className="flex-1 overflow-x-auto pb-6">
-                <div className="flex h-full gap-4 md:gap-8 min-w-[1200px] md:min-w-0 md:grid md:grid-cols-4">
-                  <KanbanColumn title="To Do" status="TODO" items={todoCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
-                  <KanbanColumn title="In Progress" status="IN_PROGRESS" items={inProgressCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
-                  <KanbanColumn title="Done" status="DONE" items={doneCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
-                  <KanbanColumn title="Rejected" status="REJECTED" items={rejectedCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+              <div className="flex-1 overflow-x-auto pb-8 hide-scrollbar -mx-4 px-4 md:mx-0 snap-x snap-mandatory">
+                <div className="flex h-full gap-4 md:gap-8 min-w-[320px] md:min-w-0 md:grid md:grid-cols-4">
+                  <div className="snap-center shrink-0 w-[85vw] md:w-auto">
+                    <KanbanColumn title="To Do" status="TODO" items={todoCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+                  </div>
+                  <div className="snap-center shrink-0 w-[85vw] md:w-auto">
+                    <KanbanColumn title="In Progress" status="IN_PROGRESS" items={inProgressCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+                  </div>
+                  <div className="snap-center shrink-0 w-[85vw] md:w-auto">
+                    <KanbanColumn title="Done" status="DONE" items={doneCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+                  </div>
+                  <div className="snap-center shrink-0 w-[85vw] md:w-auto">
+                    <KanbanColumn title="Rejected" status="REJECTED" items={rejectedCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+                  </div>
                 </div>
               </div>
             </DndContext>

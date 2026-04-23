@@ -68,6 +68,13 @@ app.get("/", (req, res) => {
 // US-001: ĐĂNG KÝ
 app.post("/api/register", async (req, res) => {
   const { email, password, fullName } = req.body;
+  
+  // Validation password strength
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return res.status(400).json({ error: "Mật khẩu phải từ 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt" });
+  }
+
   try {
     const hashed = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
@@ -86,10 +93,10 @@ app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return res.status(404).json({ error: "Email không tồn tại" });
+    if (!user) return res.status(401).json({ error: "Email không tồn tại hoặc sai mật khẩu" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: "Sai mật khẩu" });
+    if (!isMatch) return res.status(401).json({ error: "Email không tồn tại hoặc sai mật khẩu" });
 
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
@@ -238,6 +245,38 @@ app.get("/api/project/:id", async (req, res) => {
     res.json(project);
   } catch (err) {
     res.status(500).json({ error: "Lỗi server khi lấy chi tiết dự án" });
+  }
+});
+
+// CẬP NHẬT PROJECT (US-036 - Extend)
+app.patch("/api/project/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { name, description, goal } = req.body;
+  const userId = req.user.userId;
+
+  try {
+    // Kiểm tra quyền (CHỈ PO hoặc SM)
+    const member = await prisma.projectMember.findUnique({
+      where: { userId_projectId: { userId, projectId: id } },
+    });
+
+    if (!member || (member.role !== "PO" && member.role !== "SM")) {
+      return res.status(403).json({ error: "Bạn không có quyền chỉnh sửa thông tin dự án này." });
+    }
+
+    const updatedProject = await prisma.project.update({
+      where: { id },
+      data: {
+        name: name || undefined,
+        description: description !== undefined ? description : undefined,
+        goal: goal !== undefined ? goal : undefined,
+      },
+    });
+
+    res.json({ message: "Cập nhật dự án thành công", project: updatedProject });
+  } catch (err) {
+    console.error("Update project error:", err);
+    res.status(500).json({ error: "Lỗi khi cập nhật dự án" });
   }
 });
 

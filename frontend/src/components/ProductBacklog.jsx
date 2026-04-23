@@ -149,28 +149,41 @@ useSocket(projectId, handleRealTimeUpdate);
 
   return (
     <section>
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-        <div className="flex items-center gap-3 shrink-0">
-          {onSelectAll && (
-            <input 
-              type="checkbox"
-              className="w-4 h-4 cursor-pointer accent-primary shrink-0"
-              checked={displayStories.length > 0 && selectedStories.length === displayStories.length}
-              onChange={(e) => onSelectAll(e.target.checked, displayStories)}
-            />
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-6">
+        <div className="flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            {onSelectAll && (
+              <input 
+                type="checkbox"
+                className="w-5 h-5 cursor-pointer accent-primary shrink-0"
+                checked={displayStories.length > 0 && selectedStories.length === displayStories.length}
+                onChange={(e) => onSelectAll(e.target.checked, displayStories)}
+              />
+            )}
+            <h3 className="font-['Manrope'] font-bold text-xl text-on-surface flex items-center gap-2">
+              Product Backlog 
+              <span className="text-on-surface-variant font-black text-xs px-2 py-0.5 bg-surface-container rounded-full">{displayTotalItems}</span>
+            </h3>
+          </div>
+          
+          {/* Nút thêm nhanh trên mobile */}
+          {isManagement && (
+            <button
+              onClick={onAddStory}
+              className="lg:hidden w-10 h-10 bg-primary text-on-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20"
+            >
+              <span className="material-symbols-outlined text-xl">add</span>
+            </button>
           )}
-          <h3 className="font-['Manrope'] font-bold text-lg text-on-surface">
-            Product Backlog <span className="text-on-surface-variant text-sm font-medium">({displayTotalItems} items)</span>
-          </h3>
         </div>
 
-        <div className="flex items-center gap-2 flex-1 justify-end flex-wrap">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:flex lg:items-center gap-3 flex-1 lg:justify-end">
           {/* Search */}
-          <div className="relative w-64 shrink-0">
+          <div className="relative w-full lg:max-w-xs transition-all focus-within:lg:max-w-sm">
             <input
               type="text"
               placeholder="Tìm theo tiêu đề hoặc mô tả..."
-              className="pl-9 pr-3 py-2 w-full bg-surface-container-lowest rounded-lg border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm"
+              className="pl-11 pr-4 py-3 w-full bg-surface-container-low rounded-2xl border border-outline-variant/10 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all text-sm font-medium"
               value={useServerMode ? internalSearchTerm : searchTerm}
               onChange={(e) => {
                 const value = e.target.value;
@@ -182,69 +195,81 @@ useSocket(projectId, handleRealTimeUpdate);
                 }
               }}
             />
-            <span className="material-symbols-outlined absolute left-2.5 top-2 text-on-surface-variant text-lg">search</span>
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xl">search</span>
           </div>
 
-          {/* Filter Priority */}
-          <select 
-            value={useServerMode ? internalFilterPriority : filterPriority}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (useServerMode) {
-                setInternalFilterPriority(value);
-                resetToFirstPage();
-              } else if (onFilterPriorityChange) {
-                onFilterPriorityChange(value);
-              }
-            }}
-            className="bg-surface-container-lowest px-3 py-2 rounded-lg border border-outline-variant/30 focus:border-primary outline-none cursor-pointer w-32 text-sm"
-          >
-            <option value="ALL">Tất cả ưu tiên</option>
-            <option value="HIGH">HIGH</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="LOW">LOW</option>
-          </select>
+          {/* Group Filters on Mobile */}
+          <div className="grid grid-cols-2 md:contents gap-2">
+            {/* Filter Priority */}
+            <div className="relative">
+              <select 
+                value={useServerMode ? internalFilterPriority : filterPriority}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (useServerMode) {
+                    setInternalFilterPriority(value);
+                    resetToFirstPage();
+                  } else if (onFilterPriorityChange) {
+                    onFilterPriorityChange(value);
+                  }
+                }}
+                className="appearance-none bg-surface-container-low px-4 py-3 w-full lg:w-40 rounded-2xl border border-outline-variant/10 focus:border-primary outline-none cursor-pointer text-xs font-black uppercase tracking-widest text-on-surface-variant"
+              >
+                <option value="ALL">Mọi ưu tiên</option>
+                <option value="HIGH">🔴 HIGH</option>
+                <option value="MEDIUM">🟠 MEDIUM</option>
+                <option value="LOW">🟢 LOW</option>
+              </select>
+              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-primary text-lg pointer-events-none">expand_more</span>
+            </div>
 
-          {/* Filter Status */}
-          <select 
-            value={useServerMode ? internalFilterStatus : filterStatus}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (useServerMode) {
-                setInternalFilterStatus(value);
-                resetToFirstPage();
-              } else if (onFilterStatusChange) {
-                onFilterStatusChange(value);
-              }
-            }}
-            className="bg-surface-container-lowest px-3 py-2 rounded-lg border border-outline-variant/30 focus:border-primary outline-none cursor-pointer w-36 text-sm"
-          >
-            <option value="ALL">Tất cả trạng thái</option>
-            <option value="BACKLOG">Backlog</option>
-            <option value="TODO">Todo</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="DONE">Done</option>
-          </select>
+            {/* Filter Status */}
+            <div className="relative">
+              <select 
+                value={useServerMode ? internalFilterStatus : filterStatus}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (useServerMode) {
+                    setInternalFilterStatus(value);
+                    resetToFirstPage();
+                  } else if (onFilterStatusChange) {
+                    onFilterStatusChange(value);
+                  }
+                }}
+                className="appearance-none bg-surface-container-low px-4 py-3 w-full lg:w-44 rounded-2xl border border-outline-variant/10 focus:border-primary outline-none cursor-pointer text-xs font-black uppercase tracking-widest text-on-surface-variant"
+              >
+                <option value="ALL">Mọi trạng thái</option>
+                <option value="BACKLOG">Backlog</option>
+                <option value="TODO">Todo</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="DONE">Done</option>
+              </select>
+              <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-primary text-lg pointer-events-none">expand_more</span>
+            </div>
+          </div>
 
           {/* Filter Tag */}
-          <select 
-            value={useServerMode ? internalFilterTag : filterTag}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (useServerMode) {
-                setInternalFilterTag(value);
-                resetToFirstPage();
-              } else if (onFilterTagChange) {
-                onFilterTagChange(value);
-              }
-            }}
-            className="bg-surface-container-lowest px-3 py-2 rounded-lg border border-outline-variant/30 focus:border-primary outline-none cursor-pointer w-32 text-sm"
-          >
-            <option value="ALL">Tất cả nhãn</option>
-            {displayAllTags.map(tag => (
-              <option key={tag} value={tag}>{tag}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <select 
+              value={useServerMode ? internalFilterTag : filterTag}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (useServerMode) {
+                  setInternalFilterTag(value);
+                  resetToFirstPage();
+                } else if (onFilterTagChange) {
+                  onFilterTagChange(value);
+                }
+              }}
+              className="appearance-none bg-surface-container-low px-4 py-3 w-full lg:w-40 rounded-2xl border border-outline-variant/10 focus:border-primary outline-none cursor-pointer text-xs font-black uppercase tracking-widest text-on-surface-variant"
+            >
+              <option value="ALL">Mọi Nhãn</option>
+              {displayAllTags.map(tag => (
+                <option key={tag} value={tag}>#{tag}</option>
+              ))}
+            </select>
+            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-primary text-lg pointer-events-none">expand_more</span>
+          </div>
         </div>
       </div>
 

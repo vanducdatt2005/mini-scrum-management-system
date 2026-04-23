@@ -12,7 +12,7 @@ export default function Sidebar({ activePage = "Dashboard", isOpen, onClose, pro
 
   const bottomItems = [
     { icon: "group", label: "Team", href: projectId ? `/projects/${projectId}/members` : "#" },
-    { icon: "settings", label: "Settings", href: "#" },
+    { icon: "settings", label: "Settings", href: projectId ? `/projects/${projectId}/edit` : "#" },
   ];
 
   return (
