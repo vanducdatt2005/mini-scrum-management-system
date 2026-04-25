@@ -46,6 +46,7 @@ export default function ProductBacklog({
     totalPages: 1,
   });
   const [loading, setLoading] = useState(false);
+  const [isBackgroundFetching, setIsBackgroundFetching] = useState(false);
   const [allServerTags, setAllServerTags] = useState([]);
 
   // State nội bộ cho server mode
@@ -55,10 +56,14 @@ export default function ProductBacklog({
   const [internalFilterTag, setInternalFilterTag] = useState(filterTag);
 
   // Fetch từ API
-  const fetchServerBacklog = useCallback(async () => {
+  const fetchServerBacklog = useCallback(async (isBackground = false) => {
     if (!projectId) return;
 
-    setLoading(true);
+    if (isBackground) {
+      setIsBackgroundFetching(true);
+    } else {
+      setLoading(true);
+    }
     try {
       const token = localStorage.getItem('token');
       const params = {
@@ -92,7 +97,11 @@ export default function ProductBacklog({
     } catch (error) {
       console.error("Lỗi load Product Backlog:", error);
     } finally {
-      setLoading(false);
+      if (isBackground) {
+        setIsBackgroundFetching(false);
+      } else {
+        setLoading(false);
+      }
     }
   }, [projectId, serverPagination.page, internalSearchTerm, internalFilterPriority, internalFilterStatus, internalFilterTag]);
 
@@ -112,11 +121,11 @@ export default function ProductBacklog({
   const handleRealTimeUpdate = useCallback((data) => {
     if (data && (data.action === 'created' || data.action === 'deleted')) {
       setServerPagination(prev => {
-        if (prev.page === 1) fetchServerBacklog();
+        if (prev.page === 1) fetchServerBacklog(true);
         return { ...prev, page: 1 };
       });
     } else {
-      fetchServerBacklog();
+      fetchServerBacklog(true);
     }
   }, [fetchServerBacklog]);
 
@@ -127,6 +136,26 @@ useSocket(projectId, handleRealTimeUpdate);
   useEffect(() => {
     setCurrentPage(1);
   }, [stories.length]);
+
+  // Sync optimistic update from parent (Backlog.jsx)
+  useEffect(() => {
+    if (projectId && stories && stories.length > 0 && serverStories.length > 0) {
+      const storyOrder = new Map(stories.map((s, index) => [s.id, index]));
+      let isChanged = false;
+      const newServerStories = [...serverStories].sort((a, b) => {
+        const orderA = storyOrder.get(a.id);
+        const orderB = storyOrder.get(b.id);
+        if (orderA !== undefined && orderB !== undefined && orderA !== orderB) {
+           isChanged = true;
+           return orderA - orderB;
+        }
+        return 0;
+      });
+      if (isChanged) {
+        setServerStories(newServerStories);
+      }
+    }
+  }, [stories, projectId]);
 
   const allTags = [...new Set(
     stories.flatMap(story => {
