@@ -1,5 +1,6 @@
 import { useDroppable } from '@dnd-kit/core';
 import UserStoryCard from "./UserStoryCard";
+import { toast } from 'react-hot-toast';
 
 export default function SprintSection({ sprint, stories = [], onMoveToBacklog, onAssign, onEdit, onDelete, onStatusChange, onStartClick, onCompleteClick, onCeremonyClick, userRole, selectedStories = [], onToggleSelect, onSelectAll, onAddTask }) {
   const isManagement = userRole === "PO" || userRole === "SM";
@@ -12,6 +13,10 @@ export default function SprintSection({ sprint, stories = [], onMoveToBacklog, o
     : 0;
 
   const handleStartSprint = () => {
+    if (stories.length === 0) {
+      toast.error('Không thể bắt đầu Sprint khi chưa có User Story/Task nào!');
+      return;
+    }
     if (onStartClick) {
       onStartClick(sprint, stories);
     } else {
