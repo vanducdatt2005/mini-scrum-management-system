@@ -8,6 +8,7 @@ export default function CreateStoryModal({
   onSubmit, 
   loading, 
   initialData,
+  projectId,
   currentUser 
 }) {
   const [form, setForm] = useState({
@@ -257,6 +258,7 @@ export default function CreateStoryModal({
               <CommentSection 
                 entityId={initialData.id} 
                 entityType="story" 
+                projectId={projectId}
                 currentUser={currentUser}
               />
 

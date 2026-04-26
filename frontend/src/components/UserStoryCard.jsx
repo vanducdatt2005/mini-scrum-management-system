@@ -127,14 +127,27 @@ export default function UserStoryCard({
 
               {/* Actions */}
               <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                {isManagement && onEdit && (
-                  <button onClick={(e) => { e.stopPropagation(); onEdit({ id, title, description, priority, storyPoints, assignee, tags }); }} className="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-lg hover:bg-surface-container-highest text-on-surface-variant transition-all">
-                    <span className="material-symbols-outlined text-[18px] md:text-[16px]">edit</span>
-                  </button>
+                {isManagement && (
+                  <>
+                    {onEdit && (
+                      <button onClick={(e) => { e.stopPropagation(); onEdit({ id, title, description, priority, storyPoints, assignee, tags }); }} className="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-lg hover:bg-surface-container-highest text-on-surface-variant transition-all">
+                        <span className="material-symbols-outlined text-[18px] md:text-[16px]">edit</span>
+                      </button>
+                    )}
+                    {onMove && (
+                      <button onClick={(e) => { e.stopPropagation(); onMove(id); }} className="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-lg hover:bg-primary/10 text-primary transition-all" title={moveTitle}>
+                        <span className="material-symbols-outlined text-[20px] md:text-[18px]">{moveIcon}</span>
+                      </button>
+                    )}
+                  </>
                 )}
-                {isManagement && onMove && (
-                  <button onClick={(e) => { e.stopPropagation(); onMove(id); }} className="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-lg hover:bg-primary/10 text-primary transition-all" title={moveTitle}>
-                    <span className="material-symbols-outlined text-[20px] md:text-[18px]">{moveIcon}</span>
+                {onAddTask && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onAddTask(id, title); }} 
+                    className="w-8 h-8 md:w-7 md:h-7 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-on-primary transition-all border border-primary/20" 
+                    title="Tạo Task mới"
+                  >
+                    <span className="material-symbols-outlined text-[18px] md:text-[16px]">add_task</span>
                   </button>
                 )}
               </div>
@@ -229,33 +242,35 @@ export default function UserStoryCard({
           {title}
         </p>
 
-        {isManagement && (
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-            <button 
-              onClick={(e) => { e.stopPropagation(); onEdit?.({ id, title, description, priority, storyPoints, assignee, tags }); }}
-              className="p-1.5 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-all"
-              title="Sửa Story"
-            >
-              <span className="material-symbols-outlined text-sm">edit</span>
-            </button>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onDelete?.(id); }}
-              className="p-1.5 hover:bg-error/10 rounded-lg text-error transition-all"
-              title="Xóa Story"
-            >
-              <span className="material-symbols-outlined text-sm">delete</span>
-            </button>
-            {onAddTask && (
+        <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all">
+          {isManagement && (
+            <>
               <button 
-                onClick={(e) => { e.stopPropagation(); onAddTask(id, title); }}
-                className="p-1.5 bg-primary/10 hover:bg-primary rounded-lg text-primary hover:text-on-primary transition-all border border-primary/20"
-                title="Tạo Task mới"
+                onClick={(e) => { e.stopPropagation(); onEdit?.({ id, title, description, priority, storyPoints, assignee, tags }); }}
+                className="p-1.5 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-all"
+                title="Sửa Story"
               >
-                <span className="material-symbols-outlined text-sm font-bold">add_task</span>
+                <span className="material-symbols-outlined text-sm">edit</span>
               </button>
-            )}
-          </div>
-        )}
+              <button 
+                onClick={(e) => { e.stopPropagation(); onDelete?.(id); }}
+                className="p-1.5 hover:bg-error/10 rounded-lg text-error transition-all"
+                title="Xóa Story"
+              >
+                <span className="material-symbols-outlined text-sm">delete</span>
+              </button>
+            </>
+          )}
+          {onAddTask && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); onAddTask(id, title); }}
+              className="p-1.5 bg-primary/10 hover:bg-primary rounded-lg text-primary hover:text-on-primary transition-all border border-primary/20"
+              title="Tạo Task mới"
+            >
+              <span className="material-symbols-outlined text-sm font-bold">add_task</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {description && (

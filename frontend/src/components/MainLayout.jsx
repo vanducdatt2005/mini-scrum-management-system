@@ -1,6 +1,6 @@
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
-import { SidebarProvider, useSidebar } from "../context/SidebarContext";
+import { useSidebar } from "../context/SidebarContext";
 
 function MainLayoutContent({ children, activePage, header, showHeader = true, projectId }) {
   const { isOpen, close, toggle } = useSidebar();
@@ -29,9 +29,5 @@ function MainLayoutContent({ children, activePage, header, showHeader = true, pr
 }
 
 export default function MainLayout(props) {
-  return (
-    <SidebarProvider>
-      <MainLayoutContent {...props} />
-    </SidebarProvider>
-  );
+  return <MainLayoutContent {...props} />;
 }

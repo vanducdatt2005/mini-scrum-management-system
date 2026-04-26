@@ -705,6 +705,7 @@ export default function Backlog() {
                     key={sprint.id}
                     sprint={sprint}
                     stories={stories.filter((s) => s.sprintId === sprint.id)}
+                    projectId={projectId}
                     onAssign={handleAssignStory}
                     onEdit={handleEditStory}
                     onDelete={handleDeleteStory}
@@ -798,10 +799,11 @@ export default function Backlog() {
 
       <CreateStoryModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => { setIsModalOpen(false); setEditingStory(null); }}
         onSubmit={handleModalSubmit}
         loading={isSubmitting}
         initialData={editingStory}
+        projectId={projectId}
         currentUser={currentUser}
       />
 
