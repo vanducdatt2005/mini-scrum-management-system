@@ -69,7 +69,7 @@ export default function UserStoryCard({
             {/* ID - Ẩn trên mobile rất nhỏ hoặc rút gọn - Dùng làm DRAG HANDLE */}
             <span 
               {...dragProps}
-              className="text-[10px] md:text-[11px] font-mono font-bold bg-surface-container-high px-1.5 md:px-2 py-0.5 rounded text-on-surface-variant uppercase shrink-0 tracking-widest cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:text-primary transition-colors"
+              className="text-[10px] md:text-[11px] font-mono font-bold bg-surface-container-high px-1.5 md:px-2 py-0.5 rounded text-on-surface-variant uppercase shrink-0 tracking-widest cursor-grab active:cursor-grabbing hover:bg-primary/20 hover:text-primary transition-colors touch-none"
             >
               {id?.slice(-5) || "NEW"}
             </span>
@@ -216,7 +216,7 @@ export default function UserStoryCard({
 
         <span 
           {...dragProps}
-          className="material-symbols-outlined text-outline-variant hover:text-primary transition-colors mt-0.5 cursor-grab active:cursor-grabbing"
+          className="material-symbols-outlined text-outline-variant hover:text-primary transition-colors mt-0.5 cursor-grab active:cursor-grabbing touch-none"
         >
           drag_indicator
         </span>
