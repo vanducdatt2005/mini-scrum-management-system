@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   getStoryComments, 
   createStoryComment, 
@@ -6,14 +6,15 @@ import {
   createTaskComment 
 } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import useSocket from '../hooks/useSocket';
 
 export default function CommentSection({ 
   entityId, 
   entityType = 'story',   // 'story' hoặc 'task'
-  currentUser: currentUserProp  // fallback nếu truyền từ props
+  currentUser: currentUserProp,
+  projectId
 }) {
   const { user: authUser } = useAuth();
-  // Ưu tiên: useAuth() > prop > localStorage
   const currentUser = authUser || currentUserProp || (() => {
     try { return JSON.parse(localStorage.getItem('user')); } catch { return null; }
   })();
@@ -22,16 +23,13 @@ export default function CommentSection({
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const scrollRef = useRef(null);
 
   const isStory = entityType === 'story';
   const getCommentsFn = isStory ? getStoryComments : getTaskComments;
   const createCommentFn = isStory ? createStoryComment : createTaskComment;
 
-  useEffect(() => {
-    if (entityId) loadComments();
-  }, [entityId, entityType]);
-
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -44,31 +42,44 @@ export default function CommentSection({
     } finally {
       setLoading(false);
     }
-  };
+  }, [entityId, getCommentsFn]);
+
+  useEffect(() => {
+    if (entityId) loadComments();
+  }, [entityId, loadComments]);
+
+  useSocket(projectId, (data) => {
+    console.log("💬 CommentSection received socket data:", data);
+    loadComments();
+  });
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [comments]);
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    if (!newComment.trim() || !currentUser?.id) {
-      setError("Thiếu thông tin người dùng");
+    const content = newComment.trim();
+    if (!content) return;
+    
+    if (!currentUser?.id) {
+      setError("Bạn cần đăng nhập để bình luận");
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-
-      const res = await createCommentFn(entityId, newComment.trim());
-
-      // Thêm comment mới vào danh sách ngay lập tức (optimistic)
-      setComments(prev => [...prev, res.data]);
+      await createCommentFn(entityId, content);
       setNewComment('');
-      
-      // Tải lại để chắc chắn (tùy chọn)
-      // await loadComments();
-
+      await loadComments();
     } catch (err) {
       console.error("Lỗi gửi comment:", err);
-      setError(err.response?.data?.error || "Không thể gửi bình luận");
+      const msg = err.response?.data?.error || "Không thể gửi bình luận";
+      setError(msg);
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -89,8 +100,10 @@ export default function CommentSection({
         Thảo luận ({comments.length})
       </h4>
 
-      {/* Danh sách comment */}
-      <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2 mb-6 custom-scrollbar">
+      <div 
+        ref={scrollRef}
+        className="space-y-4 max-h-[320px] overflow-y-auto pr-2 mb-6 custom-scrollbar scroll-smooth"
+      >
         {comments.length === 0 && !loading && (
           <p className="text-xs text-on-surface-variant/50 italic text-center py-4">
             Chưa có bình luận nào. Hãy bắt đầu thảo luận!
@@ -119,7 +132,6 @@ export default function CommentSection({
         ))}
       </div>
 
-      {/* Ô nhập comment */}
       <div className="flex gap-3">
         <div className="flex-1 relative">
           <textarea

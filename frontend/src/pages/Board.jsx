@@ -222,16 +222,16 @@ export default function BoardPage() {
               <div className="flex-1 overflow-x-auto pb-8 hide-scrollbar -mx-4 px-4 md:mx-0 snap-x snap-mandatory">
                 <div className="flex h-full gap-4 md:gap-8 min-w-[320px] md:min-w-0 md:grid md:grid-cols-4">
                   <div className="snap-center shrink-0 w-[85vw] md:w-auto">
-                    <KanbanColumn title="To Do" status="TODO" items={todoCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+                    <KanbanColumn title="To Do" status="TODO" items={todoCards} projectId={projectId} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
                   </div>
                   <div className="snap-center shrink-0 w-[85vw] md:w-auto">
-                    <KanbanColumn title="In Progress" status="IN_PROGRESS" items={inProgressCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+                    <KanbanColumn title="In Progress" status="IN_PROGRESS" items={inProgressCards} projectId={projectId} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
                   </div>
                   <div className="snap-center shrink-0 w-[85vw] md:w-auto">
-                    <KanbanColumn title="Done" status="DONE" items={doneCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+                    <KanbanColumn title="Done" status="DONE" items={doneCards} projectId={projectId} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
                   </div>
                   <div className="snap-center shrink-0 w-[85vw] md:w-auto">
-                    <KanbanColumn title="Rejected" status="REJECTED" items={rejectedCards} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
+                    <KanbanColumn title="Rejected" status="REJECTED" items={rejectedCards} projectId={projectId} onUpdateItem={handleStatusUpdate} onAssign={handleAssign} onEdit={handleEditStory} onDelete={handleDeleteStory} userRole={userRole} />
                   </div>
                 </div>
               </div>

@@ -49,10 +49,10 @@ export const deleteTask = (id) => api.delete(`/tasks/${id}`);
 export const getStoryTasks = (storyId) => api.get(`/userstory/${storyId}/tasks`);
 
 // COMMENTS
-export const getStoryComments = (storyId) => api.get(`/userstory/${storyId}/comments`);
+export const getStoryComments = (storyId) => api.get(`/userstory/${storyId}/comments?t=${Date.now()}`);
 export const createStoryComment = (storyId, content) => api.post(`/userstory/${storyId}/comments`, { content });
 // TASK COMMENTS (US-046)
-export const getTaskComments = (taskId) => api.get(`/tasks/${taskId}/comments`);
+export const getTaskComments = (taskId) => api.get(`/tasks/${taskId}/comments?t=${Date.now()}`);
 export const createTaskComment = (taskId, content) => api.post(`/tasks/${taskId}/comments`, { content });
 // LỜI MỜI
 export const getInvitations = () => api.get('/invitations');
