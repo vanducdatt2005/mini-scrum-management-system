@@ -57,7 +57,7 @@ export function TaskCard({
       style={style}
       {...attributes}
       {...listeners}
-      className={`p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-all cursor-grab active:cursor-grabbing group
+      className={`p-3 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-all cursor-grab active:cursor-grabbing group touch-none
         ${isDragging ? 'z-50 ring-2 ring-primary/30' : ''}`}
     >
       <div className="flex justify-between items-start gap-2 mb-1">
