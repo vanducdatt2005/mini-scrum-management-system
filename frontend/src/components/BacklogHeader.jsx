@@ -13,8 +13,8 @@ export default function BacklogHeader({ daysLeft = 6, contributorCount = 12, pro
   const navigate = useNavigate();
 
   return (
-    <header className="flex justify-between items-center w-full mb-8 md:mb-12 gap-4">
-      {/* Left: Menu + Title + Contributors */}
+    <header className="flex justify-between items-center w-full px-4 md:px-8 pt-4 md:pt-6 mb-4 md:mb-8 gap-4">
+      {/* Left: Menu + Title */}
       <div className="flex items-start gap-3">
         <button 
           onClick={toggle}
@@ -23,24 +23,9 @@ export default function BacklogHeader({ daysLeft = 6, contributorCount = 12, pro
           <span className="material-symbols-outlined">menu</span>
         </button>
         <div className="flex flex-col">
-          <h2 className="font-['Manrope'] font-bold text-2xl md:text-3xl text-on-surface tracking-tighter">
+          <h2 className="font-['Manrope'] font-bold text-2xl md:text-3xl text-on-surface leading-tight mt-0.5">
             {projectName || "Project Backlog"}
           </h2>
-          <div className="flex items-center mt-2 gap-4">
-            <div className="flex -space-x-2">
-              {contributors.map((src, i) => (
-                <img
-                  key={i}
-                  className="w-8 h-8 rounded-full border-2 border-surface"
-                  src={src}
-                  alt={`contributor ${i + 1}`}
-                />
-              ))}
-            </div>
-            <span className="text-on-surface-variant text-sm font-medium">
-              {contributorCount} contributors
-            </span>
-          </div>
         </div>
       </div>
 

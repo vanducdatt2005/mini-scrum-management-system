@@ -83,7 +83,7 @@ export default function StandupPage() {
 
     return (
         <MainLayout projectId={projectId} activePage="Standup" header={
-            <div className="flex items-center gap-2 md:gap-4 px-0 md:px-0">
+            <div className="flex items-center gap-2 md:gap-4 px-4 md:px-8 pt-4 md:pt-6 mb-4 md:mb-8">
                 <button 
                   onClick={toggle}
                   className="p-2 -ml-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors md:hidden"
