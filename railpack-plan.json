@@ -1,0 +1,17 @@
+{
+    "steps": {
+        "install": {
+            "commands": [
+                "npm ci"
+            ]
+        },
+        "build": {
+            "commands": [
+                "npm install --prefix backend && npm run build --prefix backend"
+            ]
+        }
+    },
+    "deploy": {
+        "startCommand": "npm start --prefix backend"
+    }
+}
