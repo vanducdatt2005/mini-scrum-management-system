@@ -517,6 +517,7 @@ app.get("/api/userstory/:id", async (req, res) => {
 // US-045: LẤY BÌNH LUẬN CỦA USER STORY
 app.get("/api/userstory/:id/comments", async (req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     const comments = await prisma.comment.findMany({
       where: { userStoryId: req.params.id },
       include: { user: { select: { fullName: true, email: true } } },
@@ -1301,6 +1302,7 @@ app.get("/api/userstory/:storyId/tasks", authMiddleware, async (req, res) => {
 app.get("/api/tasks/:taskId/comments", async (req, res) => {
   const { taskId } = req.params;
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     const comments = await prisma.comment.findMany({
       where: { taskId: taskId },
       include: { user: { select: { fullName: true, email: true } } },

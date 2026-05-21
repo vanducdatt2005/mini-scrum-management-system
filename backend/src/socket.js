@@ -50,7 +50,7 @@ function initSocket(server, prisma) {
   // Prisma Middleware to capture mutations and auto-emit
   prisma.$use(async (params, next) => {
     const result = await next(params);
-    const targetModels = ["UserStory", "Task"];
+    const targetModels = ["UserStory", "Task", "Comment"];
     const targetActions = ["create", "update", "delete", "updateMany", "deleteMany"];
 
     if (targetModels.includes(params.model) && targetActions.includes(params.action)) {
@@ -83,13 +83,28 @@ function initSocket(server, prisma) {
             });
             projectId = story?.projectId;
           }
+        } else if (params.model === "Comment") {
+          const comment = result || (params.args?.where?.id ? await prisma.comment.findUnique({ where: { id: params.args.where.id } }) : null);
+          if (comment) {
+            if (comment.userStoryId) {
+              const story = await prisma.userStory.findUnique({ where: { id: comment.userStoryId }, select: { projectId: true } });
+              projectId = story?.projectId;
+            } else if (comment.taskId) {
+              const task = await prisma.task.findUnique({ where: { id: comment.taskId }, include: { userStory: { select: { projectId: true } } } });
+              projectId = task?.userStory?.projectId;
+            }
+          }
         }
 
         if (projectId && io) {
-          const eventName = params.model === "UserStory" ? "userStory:changed" : "task:changed";
+          let eventName = "userStory:changed";
+          if (params.model === "Task") eventName = "task:changed";
+          if (params.model === "Comment") eventName = "comment:changed";
+
           io.to(projectId).emit(eventName, {
             action: params.action,
-            projectId
+            projectId,
+            entityId: result?.userStoryId || result?.taskId || null
           });
           console.log(`📡 Emitted ${eventName} [${params.action}] to room ${projectId}`);
 

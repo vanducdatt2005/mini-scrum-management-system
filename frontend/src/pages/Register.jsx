@@ -70,7 +70,7 @@ export default function Register() {
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary shadow-lg shadow-primary/20">
             <span className="material-symbols-outlined text-2xl">rocket_launch</span>
           </div>
-          <span className="text-2xl font-black text-primary tracking-tighter font-['Manrope']">mINI Scrum</span>
+          <span className="text-2xl font-black text-primary tracking-tighter font-['Manrope']">Mini Scrum</span>
         </div>
 
         <h1 className="text-3xl font-black text-on-surface tracking-tight text-center mb-2 font-['Manrope']">Tạo tài khoản</h1>

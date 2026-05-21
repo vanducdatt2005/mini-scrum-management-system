@@ -11,6 +11,7 @@ export default function KanbanColumn({
   items = [],
   sprintId,
   onUpdateItem,
+  projectId,
   itemType = 'story', // 'story' or 'task'
   columnId,           // Optional custom ID for swimlanes
   onAssign,
@@ -66,6 +67,7 @@ export default function KanbanColumn({
                 id={`task-${item.id}`}
                 members={members}
                 userRole={userRole}
+                projectId={projectId}
                 currentUser={currentUser}          // ← THÊM DÒNG NÀY (quan trọng nhất)
                 onUpdate={(data) => onUpdateItem(item.id, data)}
                 onDelete={() => onDeleteTask && onDeleteTask(item.id)}

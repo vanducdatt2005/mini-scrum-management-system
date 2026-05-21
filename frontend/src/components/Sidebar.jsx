@@ -25,28 +25,28 @@ export default function Sidebar({ activePage = "Dashboard", isOpen, onClose, pro
         />
       )}
 
-      <aside className={`flex flex-col fixed h-full py-6 bg-surface-container-low h-screen w-64 left-0 top-0 z-50 transition-transform duration-300 ease-in-out border-r border-outline-variant/10 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <aside className={`flex flex-col fixed h-full py-4 md:py-6 bg-surface-container-low w-[240px] md:w-64 left-0 top-0 z-50 transition-transform duration-300 ease-in-out border-r border-outline-variant/10 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         {/* Logo & Close */}
-        <div className="px-6 mb-10 flex items-center justify-between">
+        <div className="px-4 md:px-6 mb-6 md:mb-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary">
-              <span className="material-symbols-outlined">rocket_launch</span>
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary">
+              <span className="material-symbols-outlined text-lg md:text-base">rocket_launch</span>
             </div>
             <div>
-              <h1 className="font-['Manrope'] font-extrabold text-on-surface leading-tight">Mini Scrum</h1>
-              <p className="font-['Inter'] text-[10px] font-medium text-on-surface-variant opacity-70">Active Sprint 1</p>
+              <h1 className="font-['Manrope'] font-extrabold text-on-surface leading-tight text-sm md:text-base">Mini Scrum</h1>
+              <p className="font-['Inter'] text-[9px] md:text-[10px] font-medium text-on-surface-variant opacity-70">Active Sprint 1</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full md:hidden"
+            className="p-1.5 text-on-surface-variant hover:bg-surface-container-high rounded-full md:hidden"
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 space-y-1 pr-4">
+        <nav className="flex-1 space-y-0.5 md:space-y-1 pr-2 md:pr-4">
         {navItems.map(({ icon, label, href }) =>
             label === activePage ? (
               <button
@@ -55,9 +55,9 @@ export default function Sidebar({ activePage = "Dashboard", isOpen, onClose, pro
                   if (href !== "#") navigate(href);
                   if (window.innerWidth < 768) onClose();
                 }}
-                className="w-full flex items-center gap-3 px-6 py-3 bg-primary/10 text-primary rounded-r-full shadow-sm font-['Inter'] text-sm font-bold transition-all text-left"
+                className="w-full flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2.5 md:py-3 bg-primary/10 text-primary rounded-r-full shadow-sm font-['Inter'] text-xs md:text-sm font-bold transition-all text-left"
               >
-                <span className="material-symbols-outlined filled">{icon}</span>
+                <span className="material-symbols-outlined filled text-[20px] md:text-[24px]">{icon}</span>
                 <span>{label}</span>
               </button>
             ) : (
@@ -67,9 +67,9 @@ export default function Sidebar({ activePage = "Dashboard", isOpen, onClose, pro
                   if (href !== "#") navigate(href);
                   if (window.innerWidth < 768) onClose();
                 }}
-                className="w-full flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:pl-8 hover:text-primary font-['Inter'] text-sm font-medium transition-all text-left"
+                className="w-full flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2.5 md:py-3 text-on-surface-variant hover:pl-5 md:hover:pl-8 hover:text-primary font-['Inter'] text-xs md:text-sm font-medium transition-all text-left"
               >
-                <span className="material-symbols-outlined">{icon}</span>
+                <span className="material-symbols-outlined text-[20px] md:text-[24px]">{icon}</span>
                 <span>{label}</span>
               </button>
             )
@@ -77,22 +77,8 @@ export default function Sidebar({ activePage = "Dashboard", isOpen, onClose, pro
         </nav>
 
         {/* Bottom section */}
-        <div className="mt-auto px-4 pr-8">
-          <button 
-            onClick={() => {
-              if (activePage === "Backlog") {
-                window.dispatchEvent(new CustomEvent("open-create-story-modal"));
-              } else {
-                navigate(projectId ? `/projects/${projectId}/backlog?action=create` : "/backlog?action=create");
-              }
-              if (window.innerWidth < 768) onClose();
-            }}
-            className="w-full flex items-center justify-center gap-2 py-3 mb-6 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl font-bold shadow-lg hover:shadow-primary/20 hover:scale-[0.98] transition-all"
-          >
-            <span className="material-symbols-outlined">add</span>
-            <span>Create Story</span>
-          </button>
-          <div className="space-y-1">
+        <div className="mt-auto px-3 md:px-4 pr-6 md:pr-8">
+          <div className="space-y-0.5 md:space-y-1">
             {bottomItems.map(({ icon, label, href }) => (
               <button
                 key={label}
@@ -100,9 +86,9 @@ export default function Sidebar({ activePage = "Dashboard", isOpen, onClose, pro
                   if (href !== "#") navigate(href);
                   if (window.innerWidth < 768) onClose();
                 }}
-                className="w-full flex items-center gap-3 px-6 py-2 text-on-surface-variant hover:text-primary font-['Inter'] text-sm font-medium transition-all text-left"
+                className="w-full flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 text-on-surface-variant hover:text-primary font-['Inter'] text-xs md:text-sm font-medium transition-all text-left"
               >
-                <span className="material-symbols-outlined">{icon}</span>
+                <span className="material-symbols-outlined text-[20px] md:text-[24px]">{icon}</span>
                 <span>{label}</span>
               </button>
             ))}
