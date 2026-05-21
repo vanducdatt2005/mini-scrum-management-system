@@ -53,13 +53,13 @@ export default function TopBar() {
       <div className="flex items-center gap-2 md:gap-6 w-full max-w-sm md:max-w-none">
         <button 
           onClick={toggle}
-          className="p-1.5 md:p-2 -ml-1.5 md:-ml-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors md:hidden"
+          className="p-1.5 md:p-2 -ml-1.5 md:-ml-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors md:hidden flex-shrink-0"
         >
           <span className="material-symbols-outlined text-[20px] md:text-[24px]">menu</span>
         </button>
 
-        <div className="relative flex-1 md:flex-none">
-          <span className="material-symbols-outlined absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2 text-outline text-xs md:text-base">
+        <div className="relative flex-1 md:flex-none min-w-0">
+          <span className="material-symbols-outlined absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2 text-outline text-xs md:text-base flex-shrink-0">
             search
           </span>
           <input
@@ -70,28 +70,28 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* Right Actions */}
-      <div className="flex items-center gap-2 md:gap-4">
-        <ThemeToggle />
+      {/* Right Actions - Safe from scrollbar */}
+      <div className="flex items-center gap-2 md:gap-4 flex-shrink-0 pr-2">
+        <div className="flex-shrink-0">
+          <ThemeToggle />
+        </div>
         
-        <button className="hidden sm:block p-1.5 md:p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
-          <span className="material-symbols-outlined text-[20px] md:text-[24px]">timer</span>
-        </button>
+        <div className="flex-shrink-0">
+          <NotificationBell invitations={invitations} onRespondInvite={handleRespond} />
+        </div>
 
-        <NotificationBell invitations={invitations} onRespondInvite={handleRespond} />
+        <div className="h-6 md:h-8 w-[1px] bg-outline-variant mx-0.5 md:mx-1 flex-shrink-0"></div>
 
-        <div className="h-6 md:h-8 w-[1px] bg-outline-variant mx-1"></div>
-
-        <div className="relative">
+        <div className="relative flex-shrink-0">
           <button 
             onClick={() => setShowMenu(!showMenu)}
-            className="group flex items-center gap-1.5 md:gap-2 p-1 pr-2 md:pr-3 rounded-full border border-outline-variant/10 hover:bg-surface-container-high transition-all"
+            className="group flex items-center gap-1 md:gap-2 p-1 pr-1.5 md:pr-3 rounded-full border border-outline-variant/10 hover:bg-surface-container-high transition-all flex-shrink-0"
           >
-            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-[10px] md:text-xs shadow-sm">
+            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-[10px] md:text-xs shadow-sm flex-shrink-0">
               {currentUser.fullName?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <span className="hidden md:block text-xs font-bold text-on-surface opacity-80">{currentUser.fullName}</span>
-            <span className="material-symbols-outlined text-xs md:text-sm text-on-surface-variant group-hover:rotate-180 transition-transform">expand_more</span>
+            <span className="hidden md:block text-xs font-bold text-on-surface opacity-80 whitespace-nowrap">{currentUser.fullName}</span>
+            <span className="material-symbols-outlined text-xs md:text-sm text-on-surface-variant group-hover:rotate-180 transition-transform flex-shrink-0">expand_more</span>
           </button>
 
           {/* User Menu Dropdown */}
